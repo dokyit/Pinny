@@ -1,0 +1,15 @@
+Install Pinny
+=============
+
+1. Drag Pinny.app onto the Applications shortcut in this disk image.
+2. Open Pinny from /Applications. It appears only in the macOS menu bar.
+3. Click the pushpin and grant Accessibility permission when prompted.
+4. Focus a window and press Control-Z (not Command-Z).
+
+Important: stock macOS does not let one app change another app's persistent
+window level. Generic persistent pinning requires the separately configured
+yabai advanced helper described in the project's README. Pinny never changes
+System Integrity Protection, NVRAM, sudoers, or Dock injection automatically.
+
+This local build is ad-hoc signed, not notarized. macOS may ask you to confirm
+opening it in System Settings > Privacy & Security.

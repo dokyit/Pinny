@@ -1,0 +1,578 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 60;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		F00000000000000000000001 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000001 /* AppCoordinator.swift */; };
+		F00000000000000000000002 /* AppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000002 /* AppModel.swift */; };
+		F00000000000000000000003 /* PinnyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000003 /* PinnyApp.swift */; };
+		F00000000000000000000004 /* AppStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000004 /* AppStatus.swift */; };
+		F00000000000000000000005 /* HotKeyConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000005 /* HotKeyConfiguration.swift */; };
+		F00000000000000000000006 /* WindowModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000006 /* WindowModels.swift */; };
+		F00000000000000000000007 /* AccessibilityPermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000007 /* AccessibilityPermissionManager.swift */; };
+		F00000000000000000000008 /* FocusedWindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000008 /* FocusedWindowManager.swift */; };
+		F00000000000000000000009 /* HotKeyManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000009 /* HotKeyManager.swift */; };
+		F0000000000000000000000A /* LaunchAtLoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60000000000000000000000A /* LaunchAtLoginManager.swift */; };
+		F0000000000000000000000B /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60000000000000000000000B /* NotificationManager.swift */; };
+		F0000000000000000000000C /* PreferencesStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60000000000000000000000C /* PreferencesStore.swift */; };
+		F0000000000000000000000D /* ShortcutActionRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60000000000000000000000D /* ShortcutActionRouter.swift */; };
+		F0000000000000000000000E /* UnsupportedWindowFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60000000000000000000000E /* UnsupportedWindowFilter.swift */; };
+		F0000000000000000000000F /* WindowLevelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60000000000000000000000F /* WindowLevelController.swift */; };
+		F00000000000000000000010 /* WindowPinManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000010 /* WindowPinManager.swift */; };
+		F0000000000000000000001A /* PinnyLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60000000000000000000001D /* PinnyLogger.swift */; };
+		F0000000000000000000001B /* WindowRaiseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60000000000000000000001E /* WindowRaiseManager.swift */; };
+		F0000000000000000000001C /* YabaiWindowService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60000000000000000000001F /* YabaiWindowService.swift */; };
+		F00000000000000000000011 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000011 /* MenuBarController.swift */; };
+		F00000000000000000000012 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000012 /* MenuBarView.swift */; };
+		F00000000000000000000013 /* ResourceLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000013 /* ResourceLocator.swift */; };
+		F00000000000000000000016 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000016 /* Assets.xcassets */; };
+		F00000000000000000000017 /* MenuBarIdle.png in Resources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000017 /* MenuBarIdle.png */; };
+		F00000000000000000000018 /* MenuBarPinned.png in Resources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000018 /* MenuBarPinned.png */; };
+		F00000000000000000000019 /* Pinny.icns in Resources */ = {isa = PBXBuildFile; fileRef = 60000000000000000000001C /* Pinny.icns */; };
+		F00000000000000000000020 /* MenuPresentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000020 /* MenuPresentationTests.swift */; };
+		F00000000000000000000021 /* PreferencesStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000021 /* PreferencesStoreTests.swift */; };
+		F00000000000000000000022 /* ShortcutActionRouterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000022 /* ShortcutActionRouterTests.swift */; };
+		F00000000000000000000023 /* UnsupportedWindowFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000023 /* UnsupportedWindowFilterTests.swift */; };
+		F00000000000000000000024 /* WindowIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000024 /* WindowIdentityTests.swift */; };
+		F00000000000000000000025 /* WindowPinManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000025 /* WindowPinManagerTests.swift */; };
+		F00000000000000000000026 /* YabaiWindowLevelControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000026 /* YabaiWindowLevelControllerTests.swift */; };
+		F00000000000000000000027 /* YabaiWindowServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000027 /* YabaiWindowServiceTests.swift */; };
+		F00000000000000000000101 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 700000000000000000000001 /* AppKit.framework */; };
+		F00000000000000000000102 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 700000000000000000000002 /* ApplicationServices.framework */; };
+		F00000000000000000000103 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 700000000000000000000003 /* Carbon.framework */; };
+		F00000000000000000000104 /* ServiceManagement.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 700000000000000000000004 /* ServiceManagement.framework */; };
+		F00000000000000000000105 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 700000000000000000000005 /* SwiftUI.framework */; };
+		F00000000000000000000106 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 700000000000000000000006 /* CoreGraphics.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		900000000000000000000001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A00000000000000000000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B00000000000000000000001;
+			remoteInfo = Pinny;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		600000000000000000000001 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
+		600000000000000000000002 /* AppModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppModel.swift; sourceTree = "<group>"; };
+		600000000000000000000003 /* PinnyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnyApp.swift; sourceTree = "<group>"; };
+		600000000000000000000004 /* AppStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStatus.swift; sourceTree = "<group>"; };
+		600000000000000000000005 /* HotKeyConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeyConfiguration.swift; sourceTree = "<group>"; };
+		600000000000000000000006 /* WindowModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowModels.swift; sourceTree = "<group>"; };
+		600000000000000000000007 /* AccessibilityPermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityPermissionManager.swift; sourceTree = "<group>"; };
+		600000000000000000000008 /* FocusedWindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusedWindowManager.swift; sourceTree = "<group>"; };
+		600000000000000000000009 /* HotKeyManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HotKeyManager.swift; sourceTree = "<group>"; };
+		60000000000000000000000A /* LaunchAtLoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LaunchAtLoginManager.swift; sourceTree = "<group>"; };
+		60000000000000000000000B /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		60000000000000000000000C /* PreferencesStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesStore.swift; sourceTree = "<group>"; };
+		60000000000000000000000D /* ShortcutActionRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutActionRouter.swift; sourceTree = "<group>"; };
+		60000000000000000000000E /* UnsupportedWindowFilter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedWindowFilter.swift; sourceTree = "<group>"; };
+		60000000000000000000000F /* WindowLevelController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowLevelController.swift; sourceTree = "<group>"; };
+		600000000000000000000010 /* WindowPinManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPinManager.swift; sourceTree = "<group>"; };
+		600000000000000000000011 /* MenuBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarController.swift; sourceTree = "<group>"; };
+		600000000000000000000012 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		600000000000000000000013 /* ResourceLocator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResourceLocator.swift; sourceTree = "<group>"; };
+		600000000000000000000014 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		600000000000000000000015 /* Pinny.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Pinny.entitlements; sourceTree = "<group>"; };
+		600000000000000000000016 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		600000000000000000000017 /* MenuBarIdle.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MenuBarIdle.png; sourceTree = "<group>"; };
+		600000000000000000000018 /* MenuBarPinned.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = MenuBarPinned.png; sourceTree = "<group>"; };
+		600000000000000000000019 /* AppIcon.svg */ = {isa = PBXFileReference; lastKnownFileType = image.svg; path = AppIcon.svg; sourceTree = "<group>"; };
+		60000000000000000000001A /* MenuBarIdle.svg */ = {isa = PBXFileReference; lastKnownFileType = image.svg; path = MenuBarIdle.svg; sourceTree = "<group>"; };
+		60000000000000000000001B /* MenuBarPinned.svg */ = {isa = PBXFileReference; lastKnownFileType = image.svg; path = MenuBarPinned.svg; sourceTree = "<group>"; };
+		60000000000000000000001C /* Pinny.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = Pinny.icns; sourceTree = "<group>"; };
+		60000000000000000000001D /* PinnyLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnyLogger.swift; sourceTree = "<group>"; };
+		60000000000000000000001E /* WindowRaiseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowRaiseManager.swift; sourceTree = "<group>"; };
+		60000000000000000000001F /* YabaiWindowService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YabaiWindowService.swift; sourceTree = "<group>"; };
+		600000000000000000000020 /* MenuPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuPresentationTests.swift; sourceTree = "<group>"; };
+		600000000000000000000021 /* PreferencesStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesStoreTests.swift; sourceTree = "<group>"; };
+		600000000000000000000022 /* ShortcutActionRouterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutActionRouterTests.swift; sourceTree = "<group>"; };
+		600000000000000000000023 /* UnsupportedWindowFilterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnsupportedWindowFilterTests.swift; sourceTree = "<group>"; };
+		600000000000000000000024 /* WindowIdentityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowIdentityTests.swift; sourceTree = "<group>"; };
+		600000000000000000000025 /* WindowPinManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPinManagerTests.swift; sourceTree = "<group>"; };
+		600000000000000000000026 /* YabaiWindowLevelControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YabaiWindowLevelControllerTests.swift; sourceTree = "<group>"; };
+		600000000000000000000027 /* YabaiWindowServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YabaiWindowServiceTests.swift; sourceTree = "<group>"; };
+		600000000000000000000030 /* Pinny.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pinny.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		600000000000000000000031 /* PinnyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PinnyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		700000000000000000000001 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		700000000000000000000002 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
+		700000000000000000000003 /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		700000000000000000000004 /* ServiceManagement.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ServiceManagement.framework; path = System/Library/Frameworks/ServiceManagement.framework; sourceTree = SDKROOT; };
+		700000000000000000000005 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		700000000000000000000006 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		E00000000000000000000002 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F00000000000000000000101 /* AppKit.framework in Frameworks */,
+				F00000000000000000000102 /* ApplicationServices.framework in Frameworks */,
+				F00000000000000000000103 /* Carbon.framework in Frameworks */,
+				F00000000000000000000104 /* ServiceManagement.framework in Frameworks */,
+				F00000000000000000000105 /* SwiftUI.framework in Frameworks */,
+				F00000000000000000000106 /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E00000000000000000000012 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A00000000000000000000002 = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000010 /* Pinny */,
+				A00000000000000000000020 /* PinnyTests */,
+				A00000000000000000000040 /* Frameworks */,
+				A00000000000000000000030 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A00000000000000000000010 /* Pinny */ = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000011 /* App */,
+				A00000000000000000000012 /* Models */,
+				A00000000000000000000013 /* Services */,
+				A00000000000000000000014 /* UI */,
+				A00000000000000000000015 /* Resources */,
+				600000000000000000000014 /* Info.plist */,
+				600000000000000000000015 /* Pinny.entitlements */,
+			);
+			path = Pinny;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000011 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				600000000000000000000001 /* AppCoordinator.swift */,
+				600000000000000000000002 /* AppModel.swift */,
+				600000000000000000000003 /* PinnyApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000012 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				600000000000000000000004 /* AppStatus.swift */,
+				600000000000000000000005 /* HotKeyConfiguration.swift */,
+				600000000000000000000006 /* WindowModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000013 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				600000000000000000000007 /* AccessibilityPermissionManager.swift */,
+				600000000000000000000008 /* FocusedWindowManager.swift */,
+				600000000000000000000009 /* HotKeyManager.swift */,
+				60000000000000000000000A /* LaunchAtLoginManager.swift */,
+				60000000000000000000000B /* NotificationManager.swift */,
+				60000000000000000000000C /* PreferencesStore.swift */,
+				60000000000000000000001D /* PinnyLogger.swift */,
+				60000000000000000000000D /* ShortcutActionRouter.swift */,
+				60000000000000000000000E /* UnsupportedWindowFilter.swift */,
+				60000000000000000000000F /* WindowLevelController.swift */,
+				600000000000000000000010 /* WindowPinManager.swift */,
+				60000000000000000000001E /* WindowRaiseManager.swift */,
+				60000000000000000000001F /* YabaiWindowService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000014 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				600000000000000000000011 /* MenuBarController.swift */,
+				600000000000000000000012 /* MenuBarView.swift */,
+				600000000000000000000013 /* ResourceLocator.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000015 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				600000000000000000000016 /* Assets.xcassets */,
+				A00000000000000000000016 /* RuntimeAssets */,
+				A00000000000000000000017 /* IconSource */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000016 /* RuntimeAssets */ = {
+			isa = PBXGroup;
+			children = (
+				600000000000000000000017 /* MenuBarIdle.png */,
+				600000000000000000000018 /* MenuBarPinned.png */,
+				60000000000000000000001C /* Pinny.icns */,
+			);
+			path = RuntimeAssets;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000017 /* IconSource */ = {
+			isa = PBXGroup;
+			children = (
+				600000000000000000000019 /* AppIcon.svg */,
+				60000000000000000000001A /* MenuBarIdle.svg */,
+				60000000000000000000001B /* MenuBarPinned.svg */,
+			);
+			path = IconSource;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000020 /* PinnyTests */ = {
+			isa = PBXGroup;
+			children = (
+				600000000000000000000020 /* MenuPresentationTests.swift */,
+				600000000000000000000021 /* PreferencesStoreTests.swift */,
+				600000000000000000000022 /* ShortcutActionRouterTests.swift */,
+				600000000000000000000023 /* UnsupportedWindowFilterTests.swift */,
+				600000000000000000000024 /* WindowIdentityTests.swift */,
+				600000000000000000000025 /* WindowPinManagerTests.swift */,
+				600000000000000000000026 /* YabaiWindowLevelControllerTests.swift */,
+				600000000000000000000027 /* YabaiWindowServiceTests.swift */,
+			);
+			path = PinnyTests;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000030 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				600000000000000000000030 /* Pinny.app */,
+				600000000000000000000031 /* PinnyTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000040 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				700000000000000000000001 /* AppKit.framework */,
+				700000000000000000000002 /* ApplicationServices.framework */,
+				700000000000000000000003 /* Carbon.framework */,
+				700000000000000000000004 /* ServiceManagement.framework */,
+				700000000000000000000005 /* SwiftUI.framework */,
+				700000000000000000000006 /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B00000000000000000000001 /* Pinny */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C00000000000000000000002 /* Build configuration list for PBXNativeTarget "Pinny" */;
+			buildPhases = (
+				E00000000000000000000001 /* Sources */,
+				E00000000000000000000002 /* Frameworks */,
+				E00000000000000000000003 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Pinny;
+			productName = Pinny;
+			productReference = 600000000000000000000030 /* Pinny.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B00000000000000000000002 /* PinnyTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C00000000000000000000003 /* Build configuration list for PBXNativeTarget "PinnyTests" */;
+			buildPhases = (
+				E00000000000000000000011 /* Sources */,
+				E00000000000000000000012 /* Frameworks */,
+				E00000000000000000000013 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				900000000000000000000002 /* PBXTargetDependency */,
+			);
+			name = PinnyTests;
+			productName = PinnyTests;
+			productReference = 600000000000000000000031 /* PinnyTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A00000000000000000000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					B00000000000000000000001 = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					B00000000000000000000002 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = B00000000000000000000001;
+					};
+				};
+			};
+			buildConfigurationList = C00000000000000000000001 /* Build configuration list for PBXProject "Pinny" */;
+			compatibilityVersion = "Xcode 15.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A00000000000000000000002;
+			productRefGroup = A00000000000000000000030 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B00000000000000000000001 /* Pinny */,
+				B00000000000000000000002 /* PinnyTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		E00000000000000000000003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F00000000000000000000016 /* Assets.xcassets in Resources */,
+				F00000000000000000000017 /* MenuBarIdle.png in Resources */,
+				F00000000000000000000018 /* MenuBarPinned.png in Resources */,
+				F00000000000000000000019 /* Pinny.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E00000000000000000000013 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		E00000000000000000000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F00000000000000000000001 /* AppCoordinator.swift in Sources */,
+				F00000000000000000000002 /* AppModel.swift in Sources */,
+				F00000000000000000000003 /* PinnyApp.swift in Sources */,
+				F00000000000000000000004 /* AppStatus.swift in Sources */,
+				F00000000000000000000005 /* HotKeyConfiguration.swift in Sources */,
+				F00000000000000000000006 /* WindowModels.swift in Sources */,
+				F00000000000000000000007 /* AccessibilityPermissionManager.swift in Sources */,
+				F00000000000000000000008 /* FocusedWindowManager.swift in Sources */,
+				F00000000000000000000009 /* HotKeyManager.swift in Sources */,
+				F0000000000000000000000A /* LaunchAtLoginManager.swift in Sources */,
+				F0000000000000000000000B /* NotificationManager.swift in Sources */,
+				F0000000000000000000000C /* PreferencesStore.swift in Sources */,
+				F0000000000000000000000D /* ShortcutActionRouter.swift in Sources */,
+				F0000000000000000000000E /* UnsupportedWindowFilter.swift in Sources */,
+				F0000000000000000000000F /* WindowLevelController.swift in Sources */,
+				F00000000000000000000010 /* WindowPinManager.swift in Sources */,
+				F0000000000000000000001A /* PinnyLogger.swift in Sources */,
+				F0000000000000000000001B /* WindowRaiseManager.swift in Sources */,
+				F0000000000000000000001C /* YabaiWindowService.swift in Sources */,
+				F00000000000000000000011 /* MenuBarController.swift in Sources */,
+				F00000000000000000000012 /* MenuBarView.swift in Sources */,
+				F00000000000000000000013 /* ResourceLocator.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E00000000000000000000011 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F00000000000000000000020 /* MenuPresentationTests.swift in Sources */,
+				F00000000000000000000021 /* PreferencesStoreTests.swift in Sources */,
+				F00000000000000000000022 /* ShortcutActionRouterTests.swift in Sources */,
+				F00000000000000000000023 /* UnsupportedWindowFilterTests.swift in Sources */,
+				F00000000000000000000024 /* WindowIdentityTests.swift in Sources */,
+				F00000000000000000000025 /* WindowPinManagerTests.swift in Sources */,
+				F00000000000000000000026 /* YabaiWindowLevelControllerTests.swift in Sources */,
+				F00000000000000000000027 /* YabaiWindowServiceTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		900000000000000000000002 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B00000000000000000000001 /* Pinny */;
+			targetProxy = 900000000000000000000001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		D00000000000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		D00000000000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		D00000000000000000000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Pinny/Pinny.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Pinny/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pinnyutility.Pinny;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		D00000000000000000000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Pinny/Pinny.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = Pinny/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pinnyutility.Pinny;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		D00000000000000000000005 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pinnyutility.PinnyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Pinny.app/Contents/MacOS/Pinny";
+			};
+			name = Debug;
+		};
+		D00000000000000000000006 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.pinnyutility.PinnyTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Pinny.app/Contents/MacOS/Pinny";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		C00000000000000000000001 /* Build configuration list for PBXProject "Pinny" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D00000000000000000000001 /* Debug */,
+				D00000000000000000000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C00000000000000000000002 /* Build configuration list for PBXNativeTarget "Pinny" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D00000000000000000000003 /* Debug */,
+				D00000000000000000000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		C00000000000000000000003 /* Build configuration list for PBXNativeTarget "PinnyTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D00000000000000000000005 /* Debug */,
+				D00000000000000000000006 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A00000000000000000000001 /* Project object */;
+}

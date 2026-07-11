@@ -1,0 +1,43 @@
+name: Pinny
+options:
+  deploymentTarget:
+    macOS: "13.0"
+  xcodeVersion: "16.0"
+settings:
+  base:
+    MACOSX_DEPLOYMENT_TARGET: "13.0"
+    SWIFT_VERSION: "5.0"
+targets:
+  Pinny:
+    type: application
+    platform: macOS
+    sources:
+      - Pinny/App
+      - Pinny/Models
+      - Pinny/Services
+      - Pinny/UI
+    resources:
+      - Pinny/Resources/Assets.xcassets
+      - Pinny/Resources/RuntimeAssets
+    info:
+      path: Pinny/Info.plist
+    entitlements:
+      path: Pinny/Pinny.entitlements
+    settings:
+      base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        CODE_SIGN_STYLE: Automatic
+        ENABLE_APP_SANDBOX: NO
+        ENABLE_HARDENED_RUNTIME: YES
+        PRODUCT_BUNDLE_IDENTIFIER: com.pinnyutility.Pinny
+  PinnyTests:
+    type: bundle.unit-test
+    platform: macOS
+    deploymentTarget: "14.0"
+    sources:
+      - PinnyTests
+    dependencies:
+      - target: Pinny
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.pinnyutility.PinnyTests
