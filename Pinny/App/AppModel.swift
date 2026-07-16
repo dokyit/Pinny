@@ -9,6 +9,7 @@ final class AppModel: ObservableObject {
     @Published var shortcutRegistrationFailure: String?
     @Published var pinnedWindowSummary: PinnedWindowSummary?
     @Published var isFocusedWindowPinned = false
+    @Published var hiddenWindowCount = 0
 
     let shortcutDisplayName: String
 
@@ -27,5 +28,9 @@ final class AppModel: ObservableObject {
 
     var hasPinnedWindow: Bool {
         pinnedWindowSummary != nil
+    }
+
+    var hasHiddenWindows: Bool {
+        hiddenWindowCount > 0
     }
 }

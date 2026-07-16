@@ -73,7 +73,8 @@ is claimed.
 | Menu-bar-only lifecycle | **Verified baseline** | A launched local bundle remained alive, Launch Services classified it as `UIElement`, activation policy was `accessory`, and the runtime probe found zero on-screen Pinny-owned normal windows. |
 | Focused individual window | **Verified** | AX lookup and private ID mapping resolved individual foreign windows and matched their owner PIDs. `_AXUIElementGetWindow` is private and remains a compatibility risk. |
 | Protected-target rejection | **Verified in tests/source; broader live matrix pending** | Pinny rejects itself and known Dock/menu bar/Control Center/Notification Center/login/security/desktop targets. |
-| Global `⌃Z` registration | **Implemented; live physical delivery pending** | Carbon registration, duplicate prevention, failure reporting, and cleanup are present. Physical delivery while another app owns focus has not been recorded in the final integrated build. |
+| Global `⌃Z`, `⌃.`, and `⌃,` registration | **Implemented; live reservation verified, physical delivery pending** | A competing-process probe received Carbon `eventHotKeyExistsErr` for all three keys while Pinny 1.1.0 was running. Independent dispatch, failure reporting, and cleanup are covered; physical delivery while another app owns focus has not been recorded by the final automated harness. |
+| Individual-window hide/restore | **Implemented** | AX minimized-state mutation is read back before success; hidden windows restore in LIFO order, stale targets are discarded, and transient failures retain retry state. |
 | Public one-shot Raise | **Verified not to pin** | Controlled Codex test: 10/10 AX success, target rank 23, cover rank 20, 0/10 target-above-cover, no focus changes. |
 | Direct CGS/SLS backend | **Rejected** | Private set/get echoed level 3 for tested window IDs, but SLS iterator, `kCGWindowLayer`, and cross-app z-order stayed at normal layer 0; presenter-right denial appeared in unified logging. |
 | yabai executable | **Verified** | `/opt/homebrew/bin/yabai`, `yabai-v7.1.25`. |
@@ -252,12 +253,13 @@ itself proof that newly added yabai sources or behavior are release-ready.
 ### Current advanced-backend source
 
 The settled integrated source passed debug and release Swift builds with
-warnings treated as errors. `Scripts/run-core-tests.sh` executed **43 tests:
-43 passed, 0 failed**, including 18 dedicated yabai/controller invariants. The
+warnings treated as errors. `Scripts/run-core-tests.sh` executed **50 tests:
+50 passed, 0 failed**, including hide/restore stack invariants and 18 dedicated
+yabai/controller invariants. The
 Swift Testing sources also compiled; the standalone Command Line Tools
 environment did not execute them through XCTest.
 
-`Scripts/create-dmg.sh` produced `dist/Pinny-1.0-arm64.dmg`. `hdiutil verify`
+`Scripts/create-dmg.sh` produced `dist/Pinny-1.1.0-arm64.dmg`. `hdiutil verify`
 reported a valid checksum, and the mounted app passed `codesign --verify
 --deep --strict`, plist lint, and arm64 architecture checks. SHA-256:
 `c8cb5560dc186e10c8513c5e74e38cab15096bc27d1307103fab8fcf67eb7093`.

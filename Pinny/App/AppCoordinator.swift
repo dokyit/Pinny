@@ -9,6 +9,7 @@ final class AppCoordinator {
     private let focusedWindowManager: FocusedWindowManager
     private let pinManager: WindowPinManager
     private let raiseManager: WindowRaiseManager
+    private let visibilityManager: WindowVisibilityManager
     private let hotKeyManager: HotKeyManager
     private let launchAtLoginManager: LaunchAtLoginManager
     private let notificationManager: NotificationManager
@@ -17,9 +18,11 @@ final class AppCoordinator {
     private var observers: [NSObjectProtocol] = []
     private var housekeepingTimer: Timer?
     private var lastLoggedAccessibilityTrust: Bool?
-    private lazy var shortcutRouter = ShortcutActionRouter { [weak self] in
-        self?.toggleCurrentWindow()
-    }
+    private lazy var shortcutRouter = ShortcutActionRouter(
+        toggleAction: { [weak self] in self?.toggleCurrentWindow() },
+        hideAction: { [weak self] in self?.hideCurrentWindow() },
+        showAction: { [weak self] in self?.showLastHiddenWindow() }
+    )
 
     var onPinnedStateChanged: ((Bool) -> Void)?
     var onFirstLaunchNeedsPermission: (() -> Void)?
@@ -31,6 +34,7 @@ final class AppCoordinator {
         focusedWindowManager: FocusedWindowManager = FocusedWindowManager(),
         pinManager: WindowPinManager = WindowPinManager(levelController: YabaiWindowLevelController()),
         raiseManager: WindowRaiseManager = WindowRaiseManager(),
+        visibilityManager: WindowVisibilityManager = WindowVisibilityManager(),
         hotKeyManager: HotKeyManager = HotKeyManager(),
         launchAtLoginManager: LaunchAtLoginManager = LaunchAtLoginManager(),
         notificationManager: NotificationManager = NotificationManager(),
@@ -42,6 +46,7 @@ final class AppCoordinator {
         self.focusedWindowManager = focusedWindowManager
         self.pinManager = pinManager
         self.raiseManager = raiseManager
+        self.visibilityManager = visibilityManager
         self.hotKeyManager = hotKeyManager
         self.launchAtLoginManager = launchAtLoginManager
         self.notificationManager = notificationManager
@@ -54,7 +59,7 @@ final class AppCoordinator {
         refreshBackendReadiness()
         refreshLaunchAtLoginState()
         installWorkspaceObservers()
-        registerHotKey()
+        registerHotKeys()
 
         housekeepingTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             self?.performHousekeeping()
@@ -133,6 +138,64 @@ final class AppCoordinator {
         }
     }
 
+    func hideCurrentWindow() {
+        PinnyLogger.hotKey.debug("Hide-window action routed")
+        guard accessibilityManager.recheck() else {
+            model.isAccessibilityTrusted = false
+            model.status = .accessibilityPermissionRequired
+            notificationManager.show(message: "Accessibility permission required")
+            return
+        }
+
+        model.isAccessibilityTrusted = true
+        preferences.onboardingCompleted = true
+
+        switch focusedWindowManager.focusedWindow(accessibilityTrusted: true) {
+        case .failure(let error):
+            model.status = .unableToHide(error.localizedDescription)
+            notificationManager.show(message: "Unable to hide this window")
+        case .success(let window):
+            switch visibilityManager.hide(window: window) {
+            case .success(let summary):
+                model.hiddenWindowCount = visibilityManager.hiddenWindowCount
+                model.status = .windowHidden(summary)
+                PinnyLogger.window.info("Window hide operation succeeded")
+                notificationManager.show(message: "Hidden")
+            case .failure(let error):
+                model.hiddenWindowCount = visibilityManager.hiddenWindowCount
+                model.status = .unableToHide(error.localizedDescription)
+                PinnyLogger.window.notice("Window hide operation failed: \(error.localizedDescription, privacy: .public)")
+                notificationManager.show(message: "Unable to hide this window")
+            }
+        }
+    }
+
+    func showLastHiddenWindow() {
+        PinnyLogger.hotKey.debug("Show-window action routed")
+        guard accessibilityManager.recheck() else {
+            model.isAccessibilityTrusted = false
+            model.status = .accessibilityPermissionRequired
+            notificationManager.show(message: "Accessibility permission required")
+            return
+        }
+
+        model.isAccessibilityTrusted = true
+        preferences.onboardingCompleted = true
+
+        switch visibilityManager.showLastHidden() {
+        case .success(let summary):
+            model.hiddenWindowCount = visibilityManager.hiddenWindowCount
+            model.status = .windowShown(summary)
+            PinnyLogger.window.info("Window restore operation succeeded")
+            notificationManager.show(message: "Restored")
+        case .failure(let error):
+            model.hiddenWindowCount = visibilityManager.hiddenWindowCount
+            model.status = .unableToShow(error.localizedDescription)
+            PinnyLogger.window.notice("Window restore operation failed: \(error.localizedDescription, privacy: .public)")
+            notificationManager.show(message: error == .noHiddenWindows ? "No hidden window" : "Unable to restore window")
+        }
+    }
+
     func openAccessibilitySettings() {
         preferences.onboardingCompleted = true
         _ = accessibilityManager.openSystemSettings()
@@ -143,6 +206,8 @@ final class AppCoordinator {
         refreshBackendReadiness()
         refreshLaunchAtLoginState()
         refreshFocusedPinState()
+        visibilityManager.removeStaleStateIfNeeded()
+        model.hiddenWindowCount = visibilityManager.hiddenWindowCount
     }
 
     func setLaunchAtLogin(_ enabled: Bool) {
@@ -199,18 +264,33 @@ final class AppCoordinator {
         notificationManager.cleanUp()
     }
 
-    private func registerHotKey() {
-        let configuration = preferences.shortcutConfiguration
-        let result = hotKeyManager.register(configuration: configuration) { [weak self] in
-            self?.shortcutRouter.routeShortcut()
+    private func registerHotKeys() {
+        let shortcuts: [(PinnyHotKey, HotKeyConfiguration, ShortcutAction)] = [
+            (.togglePin, preferences.shortcutConfiguration, .togglePin),
+            (.hideWindow, .controlPeriod, .hideWindow),
+            (.showWindow, .controlComma, .showWindow)
+        ]
+        var failures: [String] = []
+
+        for (identifier, configuration, action) in shortcuts {
+            let result = hotKeyManager.register(
+                identifier: identifier,
+                configuration: configuration
+            ) { [weak self] in
+                self?.shortcutRouter.routeShortcut(action)
+            }
+            switch result {
+            case .success:
+                PinnyLogger.hotKey.info("Global \(configuration.displayName, privacy: .public) shortcut registered")
+            case .failure(let error):
+                PinnyLogger.hotKey.error("Global shortcut registration failed: \(error.localizedDescription, privacy: .public)")
+                failures.append(error.localizedDescription)
+            }
         }
-        if case .failure(let error) = result {
-            PinnyLogger.hotKey.error("Global shortcut registration failed: \(error.localizedDescription, privacy: .public)")
-            model.shortcutRegistrationFailure = error.localizedDescription
-        } else {
-            PinnyLogger.hotKey.info("Global Control-Z shortcut registered")
-            model.shortcutRegistrationFailure = nil
-        }
+
+        model.shortcutRegistrationFailure = failures.isEmpty
+            ? nil
+            : failures.joined(separator: "\n")
     }
 
     private func apply(_ result: PinToggleResult) {
@@ -314,6 +394,8 @@ final class AppCoordinator {
                 return
             }
             self.pinManager.removeState(forTerminatedProcess: app.processIdentifier)
+            self.visibilityManager.removeState(forTerminatedProcess: app.processIdentifier)
+            self.model.hiddenWindowCount = self.visibilityManager.hiddenWindowCount
             self.synchronizePinnedPresentation()
         })
 
@@ -342,6 +424,8 @@ final class AppCoordinator {
         if wasPinned && pinManager.pinnedWindow == nil {
             synchronizePinnedPresentation()
         }
+        visibilityManager.removeStaleStateIfNeeded()
+        model.hiddenWindowCount = visibilityManager.hiddenWindowCount
         refreshPermissionState()
     }
 

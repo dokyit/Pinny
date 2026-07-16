@@ -10,6 +10,8 @@ struct MenuPreviewRenderer {
         let actions = MenuBarActions(
             refreshState: {},
             toggleCurrentWindow: {},
+            hideCurrentWindow: {},
+            showLastHiddenWindow: {},
             raiseCurrentWindowOnce: {},
             requestAccessibility: {},
             openAccessibilitySettings: {},
@@ -44,6 +46,7 @@ struct MenuPreviewRenderer {
             applicationName: "Calculator",
             windowTitle: "Scientific"
         ))
+        raisedModel.hiddenWindowCount = 1
         try render(
             view: MenuBarView(model: raisedModel, actions: actions),
             to: outputDirectory.appendingPathComponent("raised-fallback.png")
@@ -54,6 +57,7 @@ struct MenuPreviewRenderer {
 
     private static func render<V: View>(view: V, to url: URL) throws {
         let hostingView = NSHostingView(rootView: view)
+        hostingView.appearance = NSAppearance(named: .darkAqua)
         let fittingSize = hostingView.fittingSize
         hostingView.frame = NSRect(
             x: 0,

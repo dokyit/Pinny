@@ -4,6 +4,8 @@ import SwiftUI
 struct MenuBarActions {
     let refreshState: () -> Void
     let toggleCurrentWindow: () -> Void
+    let hideCurrentWindow: () -> Void
+    let showLastHiddenWindow: () -> Void
     let raiseCurrentWindowOnce: () -> Void
     let requestAccessibility: () -> Void
     let openAccessibilitySettings: () -> Void

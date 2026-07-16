@@ -4,7 +4,10 @@ Install Pinny
 1. Drag Pinny.app onto the Applications shortcut in this disk image.
 2. Open Pinny from /Applications. It appears only in the macOS menu bar.
 3. Click the pushpin and grant Accessibility permission when prompted.
-4. Focus a window and press Control-Z (not Command-Z).
+4. Focus a window and use these global shortcuts (Control, not Command):
+   - Control-Z toggles always-on-top pinning.
+   - Control-. hides the focused individual window.
+   - Control-, restores the most recently hidden window.
 
 Important: stock macOS does not let one app change another app's persistent
 window level. Generic persistent pinning requires the separately configured

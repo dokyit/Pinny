@@ -3,42 +3,47 @@ import Foundation
 
 enum HotKeyRegistrationError: Error, Equatable, LocalizedError {
     case eventHandlerInstallationFailed(OSStatus)
-    case registrationFailed(OSStatus)
+    case registrationFailed(OSStatus, displayName: String)
 
     var errorDescription: String? {
         switch self {
         case .eventHandlerInstallationFailed(let status):
             return "Could not install the global shortcut handler (OSStatus \(status))."
-        case .registrationFailed(let status):
+        case .registrationFailed(let status, let displayName):
             if status == eventHotKeyExistsErr {
-                return "⌃Z is already registered by another application."
+                return "\(displayName) is already registered by another application."
             }
-            return "Could not register ⌃Z (OSStatus \(status))."
+            return "Could not register \(displayName) (OSStatus \(status))."
         }
     }
 }
 
 final class HotKeyManager {
     private static let signature: OSType = 0x506E6E79 // "Pnny"
-    private static let identifier: UInt32 = 1
 
-    private var hotKeyReference: EventHotKeyRef?
+    private struct Registration {
+        let configuration: HotKeyConfiguration
+        let reference: EventHotKeyRef
+        var action: () -> Void
+    }
+
+    private var registrations: [UInt32: Registration] = [:]
     private var eventHandlerReference: EventHandlerRef?
-    private var action: (() -> Void)?
-    private(set) var configuration: HotKeyConfiguration?
 
-    var isRegistered: Bool { hotKeyReference != nil }
+    var isRegistered: Bool { !registrations.isEmpty }
 
     func register(
+        identifier: PinnyHotKey,
         configuration: HotKeyConfiguration,
         action: @escaping () -> Void
     ) -> Result<Void, HotKeyRegistrationError> {
-        if isRegistered {
-            if self.configuration == configuration {
-                self.action = action
+        if var existing = registrations[identifier.rawValue] {
+            if existing.configuration == configuration {
+                existing.action = action
+                registrations[identifier.rawValue] = existing
                 return .success(())
             }
-            unregister()
+            unregister(identifier: identifier)
         }
 
         if eventHandlerReference == nil {
@@ -62,7 +67,7 @@ final class HotKeyManager {
 
         let identifier = EventHotKeyID(
             signature: Self.signature,
-            id: Self.identifier
+            id: identifier.rawValue
         )
         var reference: EventHotKeyRef?
         let registrationStatus = RegisterEventHotKey(
@@ -74,30 +79,45 @@ final class HotKeyManager {
             &reference
         )
         guard registrationStatus == noErr, let reference else {
-            if let eventHandlerReference {
+            if registrations.isEmpty, let eventHandlerReference {
                 RemoveEventHandler(eventHandlerReference)
                 self.eventHandlerReference = nil
             }
-            return .failure(.registrationFailed(registrationStatus))
+            return .failure(.registrationFailed(
+                registrationStatus,
+                displayName: configuration.displayName
+            ))
         }
 
-        self.configuration = configuration
-        self.action = action
-        hotKeyReference = reference
+        registrations[identifier.id] = Registration(
+            configuration: configuration,
+            reference: reference,
+            action: action
+        )
         return .success(())
     }
 
-    func unregister() {
-        if let hotKeyReference {
-            UnregisterEventHotKey(hotKeyReference)
-            self.hotKeyReference = nil
+    func unregister(identifier: PinnyHotKey) {
+        if let registration = registrations.removeValue(forKey: identifier.rawValue) {
+            UnregisterEventHotKey(registration.reference)
         }
+        removeEventHandlerIfUnused()
+    }
+
+    func unregister() {
+        for registration in registrations.values {
+            UnregisterEventHotKey(registration.reference)
+        }
+        registrations.removeAll()
+        removeEventHandlerIfUnused()
+    }
+
+    private func removeEventHandlerIfUnused() {
+        guard registrations.isEmpty else { return }
         if let eventHandlerReference {
             RemoveEventHandler(eventHandlerReference)
             self.eventHandlerReference = nil
         }
-        configuration = nil
-        action = nil
     }
 
     fileprivate func handle(event: EventRef?) -> OSStatus {
@@ -114,10 +134,10 @@ final class HotKeyManager {
         )
         guard parameterStatus == noErr,
               identifier.signature == Self.signature,
-              identifier.id == Self.identifier else {
+              let registration = registrations[identifier.id] else {
             return OSStatus(eventNotHandledErr)
         }
-        action?()
+        registration.action()
         return noErr
     }
 

@@ -27,6 +27,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let menuBarController = MenuBarController(model: model, actions: MenuBarActions(
             refreshState: { [weak coordinator] in coordinator?.refreshVisibleState() },
             toggleCurrentWindow: { [weak coordinator] in coordinator?.toggleCurrentWindow() },
+            hideCurrentWindow: { [weak coordinator] in coordinator?.hideCurrentWindow() },
+            showLastHiddenWindow: { [weak coordinator] in coordinator?.showLastHiddenWindow() },
             raiseCurrentWindowOnce: { [weak coordinator] in coordinator?.raiseCurrentWindowOnce() },
             requestAccessibility: { [weak coordinator] in coordinator?.requestAccessibilityPermission() },
             openAccessibilitySettings: { [weak coordinator] in coordinator?.openAccessibilitySettings() },

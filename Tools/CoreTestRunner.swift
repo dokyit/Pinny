@@ -130,10 +130,84 @@ private struct CoreTestSuite {
                 && failurePresentation.statusTitle == "Shortcut registration failed"
                 && failurePresentation.actionTitle == "Unpin Current Window"
         }
+        test("hide and show shortcuts use the requested Control keys") {
+            HotKeyConfiguration.controlPeriod.keyCode == UInt32(kVK_ANSI_Period)
+                && HotKeyConfiguration.controlPeriod.carbonModifiers == UInt32(controlKey)
+                && HotKeyConfiguration.controlPeriod.displayName == "⌃."
+                && HotKeyConfiguration.controlComma.keyCode == UInt32(kVK_ANSI_Comma)
+                && HotKeyConfiguration.controlComma.carbonModifiers == UInt32(controlKey)
+                && HotKeyConfiguration.controlComma.displayName == "⌃,"
+        }
+        var shortcutEvents: [String] = []
+        let multiActionRouter = ShortcutActionRouter(
+            toggleAction: { shortcutEvents.append("pin") },
+            hideAction: { shortcutEvents.append("hide") },
+            showAction: { shortcutEvents.append("show") }
+        )
+        multiActionRouter.routeShortcut(.hideWindow)
+        multiActionRouter.routeShortcut(.showWindow)
+        multiActionRouter.routeShortcut(.togglePin)
+        test("each global shortcut routes only its own action") {
+            shortcutEvents == ["hide", "show", "pin"]
+        }
 
+        runVisibilityTests()
         runPinStateTests()
         runYabaiControllerTests()
         runYabaiServiceTests()
+    }
+
+    private mutating func runVisibilityTests() {
+        let controller = CoreFakeWindowVisibilityController()
+        let validity = CoreVisibilityValidityChecker()
+        let manager = WindowVisibilityManager(
+            controller: controller,
+            validityChecker: validity
+        )
+        let first = makeWindow(pid: 44, hash: 101, title: "First hidden")
+        let second = makeWindow(pid: 45, hash: 102, title: "Second hidden")
+
+        _ = manager.hide(window: first)
+        _ = manager.hide(window: second)
+        let secondRestore = manager.showLastHidden()
+        test("hidden windows restore in last-in-first-out order") {
+            coreVisibilitySummary(secondRestore)?.windowTitle == "Second hidden"
+                && manager.hiddenWindowCount == 1
+                && controller.events == ["hide:101", "hide:102", "show:102"]
+        }
+
+        controller.showResult = .failure(.accessibilityFailure(
+            operation: "restore",
+            error: .cannotComplete
+        ))
+        _ = manager.showLastHidden()
+        test("transient restore failure retains hidden window for retry") {
+            manager.hiddenWindowCount == 1
+        }
+
+        controller.showResult = .success(())
+        validity.invalidIdentities.insert(first.identity)
+        test("stale hidden window is discarded safely") {
+            coreVisibilityError(manager.showLastHidden()) == .noHiddenWindows
+                && manager.hiddenWindowCount == 0
+        }
+
+        controller.hideResult = .failure(.minimizeUnsupported)
+        let failedHide = manager.hide(window: first)
+        test("failed hide is never added to restore stack") {
+            coreVisibilityError(failedHide) == .minimizeUnsupported
+                && manager.hiddenWindowCount == 0
+        }
+
+        controller.hideResult = .success(())
+        validity.invalidIdentities.removeAll()
+        _ = manager.hide(window: first)
+        _ = manager.hide(window: second)
+        manager.removeState(forTerminatedProcess: 44)
+        test("terminated application is removed from hidden stack") {
+            manager.hiddenWindowCount == 1
+                && manager.hiddenWindows.first?.identity.processIdentifier == 45
+        }
     }
 
     private mutating func runPreferenceTests() {
@@ -765,6 +839,44 @@ private final class CoreMutableValidityChecker: WindowValidityChecking {
     }
 
     func isValid(window: FocusedWindow) -> Bool { isValid }
+}
+
+private final class CoreFakeWindowVisibilityController: WindowVisibilityControlling {
+    var hideResult: Result<Void, WindowVisibilityError> = .success(())
+    var showResult: Result<Void, WindowVisibilityError> = .success(())
+    private(set) var events: [String] = []
+
+    func hide(window: FocusedWindow) -> Result<Void, WindowVisibilityError> {
+        events.append("hide:\(window.identity.accessibilityElementHash)")
+        return hideResult
+    }
+
+    func show(window: FocusedWindow) -> Result<Void, WindowVisibilityError> {
+        events.append("show:\(window.identity.accessibilityElementHash)")
+        return showResult
+    }
+}
+
+private final class CoreVisibilityValidityChecker: WindowValidityChecking {
+    var invalidIdentities: Set<WindowIdentity> = []
+
+    func isValid(window: FocusedWindow) -> Bool {
+        !invalidIdentities.contains(window.identity)
+    }
+}
+
+private func coreVisibilitySummary(
+    _ result: Result<PinnedWindowSummary, WindowVisibilityError>
+) -> PinnedWindowSummary? {
+    guard case .success(let summary) = result else { return nil }
+    return summary
+}
+
+private func coreVisibilityError(
+    _ result: Result<PinnedWindowSummary, WindowVisibilityError>
+) -> WindowVisibilityError? {
+    guard case .failure(let error) = result else { return nil }
+    return error
 }
 
 private func makeWindow(pid: pid_t, hash: CFHashCode, title: String) -> FocusedWindow {

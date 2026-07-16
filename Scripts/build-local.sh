@@ -36,6 +36,7 @@ SOURCES=(
   "$ROOT/Pinny/Services/YabaiWindowService.swift"
   "$ROOT/Pinny/Services/WindowPinManager.swift"
   "$ROOT/Pinny/Services/WindowRaiseManager.swift"
+  "$ROOT/Pinny/Services/WindowVisibilityManager.swift"
   "$ROOT/Pinny/UI/MenuBarController.swift"
   "$ROOT/Pinny/UI/MenuBarView.swift"
   "$ROOT/Pinny/UI/ResourceLocator.swift"

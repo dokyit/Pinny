@@ -75,6 +75,52 @@ struct MenuBarView: View {
             .buttonStyle(.borderedProminent)
             .disabled(!model.menuPresentation.canToggleWindow)
 
+            HStack(spacing: 8) {
+                Button(action: actions.hideCurrentWindow) {
+                    HStack {
+                        Text("Hide Current")
+                            .foregroundStyle(Color(nsColor: .labelColor))
+                        Spacer()
+                        Text(HotKeyConfiguration.controlPeriod.displayName)
+                            .foregroundStyle(Color(nsColor: .secondaryLabelColor))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 7)
+                    .background(Color(nsColor: .controlBackgroundColor))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 7)
+                            .stroke(Color(nsColor: .separatorColor), lineWidth: 0.5)
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 7))
+                }
+                .buttonStyle(.plain)
+                .disabled(!model.isAccessibilityTrusted)
+                .opacity(model.isAccessibilityTrusted ? 1 : 0.55)
+
+                Button(action: actions.showLastHiddenWindow) {
+                    HStack {
+                        Text("Restore Last")
+                            .foregroundStyle(Color(nsColor: .labelColor))
+                        Spacer()
+                        Text(HotKeyConfiguration.controlComma.displayName)
+                            .foregroundStyle(Color(nsColor: .secondaryLabelColor))
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 7)
+                    .background(Color(nsColor: .controlBackgroundColor))
+                    .overlay {
+                        RoundedRectangle(cornerRadius: 7)
+                            .stroke(Color(nsColor: .separatorColor), lineWidth: 0.5)
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 7))
+                }
+                .buttonStyle(.plain)
+                .disabled(!model.isAccessibilityTrusted || !model.hasHiddenWindows)
+                .opacity(model.isAccessibilityTrusted && model.hasHiddenWindows ? 1 : 0.55)
+            }
+
             Button(action: actions.raiseCurrentWindowOnce) {
                 Text("Raise Current Window Once (Fallback)")
                     .foregroundStyle(.primary)

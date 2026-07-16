@@ -91,4 +91,26 @@ struct MenuPresentationTests {
         )
         #expect(failure.statusTitle == "Unable to raise this window")
     }
+
+    @Test
+    func testHideAndRestorePresentationsIdentifyTheWindow() {
+        let summary = PinnedWindowSummary(
+            applicationName: "Notes",
+            windowTitle: "Ideas"
+        )
+
+        let hidden = MenuPresentation.make(
+            status: .windowHidden(summary),
+            isAccessibilityTrusted: true
+        )
+        let shown = MenuPresentation.make(
+            status: .windowShown(summary),
+            isAccessibilityTrusted: true
+        )
+
+        #expect(hidden.statusTitle == "Window hidden")
+        #expect(hidden.statusDetail == "Hidden: Notes — Ideas")
+        #expect(shown.statusTitle == "Window restored")
+        #expect(shown.statusDetail == "Restored: Notes — Ideas")
+    }
 }

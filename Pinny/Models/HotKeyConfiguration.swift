@@ -11,4 +11,22 @@ struct HotKeyConfiguration: Codable, Equatable {
         carbonModifiers: UInt32(controlKey),
         displayName: "⌃Z"
     )
+
+    static let controlPeriod = HotKeyConfiguration(
+        keyCode: UInt32(kVK_ANSI_Period),
+        carbonModifiers: UInt32(controlKey),
+        displayName: "⌃."
+    )
+
+    static let controlComma = HotKeyConfiguration(
+        keyCode: UInt32(kVK_ANSI_Comma),
+        carbonModifiers: UInt32(controlKey),
+        displayName: "⌃,"
+    )
+}
+
+enum PinnyHotKey: UInt32, CaseIterable {
+    case togglePin = 1
+    case hideWindow = 2
+    case showWindow = 3
 }

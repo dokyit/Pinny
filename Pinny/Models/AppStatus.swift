@@ -4,10 +4,14 @@ enum AppStatus: Equatable {
     case ready
     case windowPinned(PinnedWindowSummary)
     case windowRaisedOnce(PinnedWindowSummary)
+    case windowHidden(PinnedWindowSummary)
+    case windowShown(PinnedWindowSummary)
     case accessibilityPermissionRequired
     case advancedHelperRequired(String)
     case unableToPin(String)
     case unableToRaise(String)
+    case unableToHide(String)
+    case unableToShow(String)
     case shortcutRegistrationFailed(String)
 }
 
@@ -73,6 +77,20 @@ struct MenuPresentation: Equatable {
                 actionTitle: actionTitle,
                 canToggleWindow: true
             )
+        case .windowHidden(let window):
+            return MenuPresentation(
+                statusTitle: "Window hidden",
+                statusDetail: "Hidden: \(window.displayName)",
+                actionTitle: actionTitle,
+                canToggleWindow: true
+            )
+        case .windowShown(let window):
+            return MenuPresentation(
+                statusTitle: "Window restored",
+                statusDetail: "Restored: \(window.displayName)",
+                actionTitle: actionTitle,
+                canToggleWindow: true
+            )
         case .accessibilityPermissionRequired:
             return MenuPresentation(
                 statusTitle: "Accessibility permission required",
@@ -97,6 +115,20 @@ struct MenuPresentation: Equatable {
         case .unableToRaise(let reason):
             return MenuPresentation(
                 statusTitle: "Unable to raise this window",
+                statusDetail: reason,
+                actionTitle: actionTitle,
+                canToggleWindow: true
+            )
+        case .unableToHide(let reason):
+            return MenuPresentation(
+                statusTitle: "Unable to hide this window",
+                statusDetail: reason,
+                actionTitle: actionTitle,
+                canToggleWindow: true
+            )
+        case .unableToShow(let reason):
+            return MenuPresentation(
+                statusTitle: "Unable to restore a window",
                 statusDetail: reason,
                 actionTitle: actionTitle,
                 canToggleWindow: true

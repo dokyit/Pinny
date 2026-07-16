@@ -5,7 +5,7 @@
 <h1 align="center">Pinny</h1>
 
 <p align="center">
-  Pin the focused macOS window above other applications with <strong>Control-Z</strong>.
+  Pin, hide, and restore focused macOS windows with global Control shortcuts.
 </p>
 
 <p align="center">
@@ -17,10 +17,12 @@
 </p>
 
 Pinny is a native Swift menu-bar utility for Apple Silicon Macs. It runs as an
-`LSUIElement` accessory app, registers **Control-Z** (`⌃Z`) globally, uses the
-macOS Accessibility API to identify one focused window, and can ask an optional,
-separately configured [yabai](https://github.com/asmvik/yabai) service to keep
-that window in yabai's `above` compositor sub-layer.
+`LSUIElement` accessory app. It registers **Control-Z** (`⌃Z`) to toggle a
+pin, **Control-.** (`⌃.`) to hide the focused window, and **Control-,** (`⌃,`)
+to restore the most recently hidden window. Pinny uses the macOS Accessibility
+API to identify exact windows and can ask an optional, separately configured
+[yabai](https://github.com/asmvik/yabai) service to keep a pinned window in
+yabai's `above` compositor sub-layer.
 
 > [!IMPORTANT]
 > Arbitrary third-party always-on-top is not available to an ordinary macOS
@@ -44,7 +46,8 @@ that window in yabai's `above` compositor sub-layer.
 | Native arm64 app, macOS 13+ | Implemented |
 | Menu-bar-only process; no Dock icon | Implemented and process-classification tested |
 | Focused application and individual AX window lookup | Implemented and live-probed |
-| Global `⌃Z` registration | Implemented with Carbon, duplicate detection, and clean unregister |
+| Global `⌃Z`, `⌃.`, and `⌃,` registration | Implemented with Carbon, independent duplicate detection, routing, and clean unregister |
+| Hide/restore exact windows | Implemented with verified AX minimize state and a last-hidden-first-restored stack; does not hide unrelated windows from the same app |
 | Generic third-party always-on-top | Implemented and live-validated through the optional yabai backend (`normal 0 → above 3 → normal 0`) |
 | Public-only fallback | **Raise Current Window Once (Fallback)** uses `AXRaise`; controlled testing proved that it does not stay above an active window from another app |
 | Accessibility onboarding | Implemented |
@@ -57,7 +60,7 @@ after Pinny or macOS restarts.
 
 ## Install the DMG
 
-Download `Pinny-1.0-arm64.dmg` from the
+Download `Pinny-1.1.0-arm64.dmg` from the
 [latest GitHub Release](https://github.com/dokyit/Pinny/releases/latest).
 
 1. Open the DMG.
@@ -188,6 +191,16 @@ tccutil reset Accessibility com.pinnyutility.Pinny
    and then displays `Pinned`.
 4. Focus the same window and press `⌃Z` again to restore its recorded original
    sub-layer.
+
+Window visibility shortcuts do not require yabai:
+
+- Press **Control-.** (`⌃.`) to hide (minimize) the focused individual window.
+- Press **Control-,** (`⌃,`) to restore and raise the most recently hidden
+  surviving window.
+- Repeated hides form a stack, so repeated restores bring them back in reverse
+  order. Closing an application safely removes its remembered windows. The
+  stack is process-local and resets when Pinny quits or restarts; already
+  minimized windows remain minimized.
 
 Opening Pinny's popover does not intentionally select Pinny as the target; it
 remembers the last external application. If another process already owns the
@@ -373,13 +386,14 @@ their own explicit security decision and configure it independently.
 | --- | --- |
 | `AppCoordinator` / `AppModel` | Lifecycle, UI state, action routing, maintenance |
 | `MenuBarController` / `MenuBarView` | Status item and compact popover |
-| `HotKeyManager` | Global Carbon `⌃Z` registration and cleanup |
+| `HotKeyManager` | Global Carbon registration, independent action dispatch, and cleanup for all three shortcuts |
 | `AccessibilityPermissionManager` | Trust checks, prompt, Settings deep link |
 | `FocusedWindowManager` | External focused AX window lookup and protected-target filtering |
 | `WindowPinManager` | One-window toggle state, replacement, cleanup |
 | `YabaiWindowLevelController` | Owner-safe pin, verification, maintenance, exact restore |
 | `YabaiWindowService` | Narrow `yabai -m` process client and AX-to-window-ID mapping |
 | `WindowRaiseManager` | Explicit one-shot public `AXRaise` fallback |
+| `WindowVisibilityManager` | Verified individual-window minimize/restore stack and stale-target cleanup |
 | `LaunchAtLoginManager` | `SMAppService.mainApp` status and mutation |
 | `NotificationManager` | Small nonactivating HUD |
 
@@ -398,11 +412,12 @@ The executable exists but its user service is not running. `yabai
 --start-service` is the upstream command. Starting the service alone still does
 not enable layer control without the separately configured scripting addition.
 
-### `⌃Z` does not respond
+### A global shortcut does not respond
 
 Check the popover for a registration error and quit any shortcut utility using
-the same key. Pinny requests Control, not Command. Also confirm Accessibility is
-enabled for the stable app copy.
+the same key. Pinny requests Control, not Command: `⌃Z` toggles pin, `⌃.`
+hides, and `⌃,` restores. Also confirm Accessibility is enabled for the stable
+app copy.
 
 ### A window stayed above after an error or crash
 

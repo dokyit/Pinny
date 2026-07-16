@@ -26,6 +26,7 @@
 		F0000000000000000000001A /* PinnyLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60000000000000000000001D /* PinnyLogger.swift */; };
 		F0000000000000000000001B /* WindowRaiseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60000000000000000000001E /* WindowRaiseManager.swift */; };
 		F0000000000000000000001C /* YabaiWindowService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 60000000000000000000001F /* YabaiWindowService.swift */; };
+		F00000000000000000000028 /* WindowVisibilityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000028 /* WindowVisibilityManager.swift */; };
 		F00000000000000000000011 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000011 /* MenuBarController.swift */; };
 		F00000000000000000000012 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000012 /* MenuBarView.swift */; };
 		F00000000000000000000013 /* ResourceLocator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000013 /* ResourceLocator.swift */; };
@@ -41,6 +42,7 @@
 		F00000000000000000000025 /* WindowPinManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000025 /* WindowPinManagerTests.swift */; };
 		F00000000000000000000026 /* YabaiWindowLevelControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000026 /* YabaiWindowLevelControllerTests.swift */; };
 		F00000000000000000000027 /* YabaiWindowServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000027 /* YabaiWindowServiceTests.swift */; };
+		F00000000000000000000029 /* WindowVisibilityManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 600000000000000000000029 /* WindowVisibilityManagerTests.swift */; };
 		F00000000000000000000101 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 700000000000000000000001 /* AppKit.framework */; };
 		F00000000000000000000102 /* ApplicationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 700000000000000000000002 /* ApplicationServices.framework */; };
 		F00000000000000000000103 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 700000000000000000000003 /* Carbon.framework */; };
@@ -91,6 +93,7 @@
 		60000000000000000000001D /* PinnyLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinnyLogger.swift; sourceTree = "<group>"; };
 		60000000000000000000001E /* WindowRaiseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowRaiseManager.swift; sourceTree = "<group>"; };
 		60000000000000000000001F /* YabaiWindowService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YabaiWindowService.swift; sourceTree = "<group>"; };
+		600000000000000000000028 /* WindowVisibilityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowVisibilityManager.swift; sourceTree = "<group>"; };
 		600000000000000000000020 /* MenuPresentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuPresentationTests.swift; sourceTree = "<group>"; };
 		600000000000000000000021 /* PreferencesStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesStoreTests.swift; sourceTree = "<group>"; };
 		600000000000000000000022 /* ShortcutActionRouterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutActionRouterTests.swift; sourceTree = "<group>"; };
@@ -99,6 +102,7 @@
 		600000000000000000000025 /* WindowPinManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPinManagerTests.swift; sourceTree = "<group>"; };
 		600000000000000000000026 /* YabaiWindowLevelControllerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YabaiWindowLevelControllerTests.swift; sourceTree = "<group>"; };
 		600000000000000000000027 /* YabaiWindowServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YabaiWindowServiceTests.swift; sourceTree = "<group>"; };
+		600000000000000000000029 /* WindowVisibilityManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowVisibilityManagerTests.swift; sourceTree = "<group>"; };
 		600000000000000000000030 /* Pinny.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pinny.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		600000000000000000000031 /* PinnyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PinnyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		700000000000000000000001 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -193,6 +197,7 @@
 				600000000000000000000010 /* WindowPinManager.swift */,
 				60000000000000000000001E /* WindowRaiseManager.swift */,
 				60000000000000000000001F /* YabaiWindowService.swift */,
+				600000000000000000000028 /* WindowVisibilityManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -248,6 +253,7 @@
 				600000000000000000000025 /* WindowPinManagerTests.swift */,
 				600000000000000000000026 /* YabaiWindowLevelControllerTests.swift */,
 				600000000000000000000027 /* YabaiWindowServiceTests.swift */,
+				600000000000000000000029 /* WindowVisibilityManagerTests.swift */,
 			);
 			path = PinnyTests;
 			sourceTree = "<group>";
@@ -395,6 +401,7 @@
 				F0000000000000000000001A /* PinnyLogger.swift in Sources */,
 				F0000000000000000000001B /* WindowRaiseManager.swift in Sources */,
 				F0000000000000000000001C /* YabaiWindowService.swift in Sources */,
+				F00000000000000000000028 /* WindowVisibilityManager.swift in Sources */,
 				F00000000000000000000011 /* MenuBarController.swift in Sources */,
 				F00000000000000000000012 /* MenuBarView.swift in Sources */,
 				F00000000000000000000013 /* ResourceLocator.swift in Sources */,
@@ -413,6 +420,7 @@
 				F00000000000000000000025 /* WindowPinManagerTests.swift in Sources */,
 				F00000000000000000000026 /* YabaiWindowLevelControllerTests.swift in Sources */,
 				F00000000000000000000027 /* YabaiWindowServiceTests.swift in Sources */,
+				F00000000000000000000029 /* WindowVisibilityManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.0 — 2026-07-15
+
+- Added global Control-. to hide the exact focused window without hiding other
+  windows from the same application.
+- Added global Control-, to restore and raise the most recently hidden window.
+- Added a last-hidden-first-restored stack with terminated/stale-window cleanup
+  and retry-safe behavior after transient Accessibility failures.
+- Added popover buttons and status/HUD feedback for hide and restore actions.
+- Refactored global Carbon shortcut handling to register and dispatch three
+  independent shortcuts while preserving Control-Z pin/unpin behavior.
+- Expanded the executable core suite from 43 to 50 passing tests.
+
 ## 1.0.0 — 2026-07-10
 
 - Native Apple Silicon macOS menu-bar application with no Dock icon.

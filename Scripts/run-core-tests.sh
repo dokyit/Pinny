@@ -20,7 +20,9 @@ xcrun --sdk macosx swiftc \
   "$ROOT/Pinny/Services/WindowLevelController.swift" \
   "$ROOT/Pinny/Services/YabaiWindowService.swift" \
   "$ROOT/Pinny/Services/WindowPinManager.swift" \
+  "$ROOT/Pinny/Services/WindowVisibilityManager.swift" \
   "$ROOT/Tools/CoreTestRunner.swift" \
+  -framework AppKit \
   -framework ApplicationServices \
   -framework Carbon \
   -framework CoreGraphics \
