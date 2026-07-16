@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.1.1 — 2026-07-15
+
+- Fixed Control-. reporting failure even though macOS minimized the window.
+- Fixed the resulting Control-, “no hidden window” error by recording the
+  window as soon as the Accessibility minimize request succeeds.
+- Deferred restore focus by one main-loop turn so macOS can apply the
+  unminimize request before Pinny raises the window.
+
 ## 1.1.0 — 2026-07-15
 
 - Added global Control-. to hide the exact focused window without hiding other

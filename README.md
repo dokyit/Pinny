@@ -47,7 +47,7 @@ yabai's `above` compositor sub-layer.
 | Menu-bar-only process; no Dock icon | Implemented and process-classification tested |
 | Focused application and individual AX window lookup | Implemented and live-probed |
 | Global `⌃Z`, `⌃.`, and `⌃,` registration | Implemented with Carbon, independent duplicate detection, routing, and clean unregister |
-| Hide/restore exact windows | Implemented with verified AX minimize state and a last-hidden-first-restored stack; does not hide unrelated windows from the same app |
+| Hide/restore exact windows | Implemented with the AX minimize setter and a last-hidden-first-restored stack; does not hide unrelated windows from the same app |
 | Generic third-party always-on-top | Implemented and live-validated through the optional yabai backend (`normal 0 → above 3 → normal 0`) |
 | Public-only fallback | **Raise Current Window Once (Fallback)** uses `AXRaise`; controlled testing proved that it does not stay above an active window from another app |
 | Accessibility onboarding | Implemented |
@@ -60,7 +60,7 @@ after Pinny or macOS restarts.
 
 ## Install the DMG
 
-Download `Pinny-1.1.0-arm64.dmg` from the
+Download `Pinny-1.1.1-arm64.dmg` from the
 [latest GitHub Release](https://github.com/dokyit/Pinny/releases/latest).
 
 1. Open the DMG.

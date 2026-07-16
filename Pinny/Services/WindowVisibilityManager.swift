@@ -5,7 +5,6 @@ import Foundation
 enum WindowVisibilityError: Error, Equatable, LocalizedError {
     case minimizeUnsupported
     case accessibilityFailure(operation: String, error: AXError)
-    case verificationFailed(expectedMinimized: Bool)
     case noHiddenWindows
     case targetGone
 
@@ -15,9 +14,6 @@ enum WindowVisibilityError: Error, Equatable, LocalizedError {
             return "This window does not allow macOS Accessibility to change its minimized state."
         case .accessibilityFailure(let operation, let error):
             return "Could not \(operation) the window (AXError \(error.rawValue))."
-        case .verificationFailed(let expectedMinimized):
-            let state = expectedMinimized ? "hidden" : "visible"
-            return "The window did not report itself as \(state) after the request."
         case .noHiddenWindows:
             return "There is no window hidden by Pinny to restore."
         case .targetGone:
@@ -41,7 +37,9 @@ final class AccessibilityWindowVisibilityController: WindowVisibilityControlling
         case .failure(let error):
             return .failure(error)
         case .success:
-            bringToFront(window: window)
+            DispatchQueue.main.async { [weak self] in
+                self?.bringToFront(window: window)
+            }
             return .success(())
         }
     }
@@ -78,34 +76,7 @@ final class AccessibilityWindowVisibilityController: WindowVisibilityControlling
                 error: setError
             ))
         }
-
-        switch minimizedState(of: window.element) {
-        case .success(let actual) where actual == minimized:
-            return .success(())
-        case .success:
-            return .failure(.verificationFailed(expectedMinimized: minimized))
-        case .failure(let error):
-            return .failure(error)
-        }
-    }
-
-    private func minimizedState(
-        of element: AXUIElement
-    ) -> Result<Bool, WindowVisibilityError> {
-        var value: CFTypeRef?
-        let error = AXUIElementCopyAttributeValue(
-            element,
-            kAXMinimizedAttribute as CFString,
-            &value
-        )
-        guard error == .success else {
-            return .failure(axFailure(operation: "verify", error: error))
-        }
-        guard let value, CFGetTypeID(value) == CFBooleanGetTypeID() else {
-            return .failure(.verificationFailed(expectedMinimized: false))
-        }
-        let boolean = unsafeBitCast(value, to: CFBoolean.self)
-        return .success(CFBooleanGetValue(boolean))
+        return .success(())
     }
 
     private func bringToFront(window: FocusedWindow) {

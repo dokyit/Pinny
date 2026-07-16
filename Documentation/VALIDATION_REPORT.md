@@ -73,8 +73,8 @@ is claimed.
 | Menu-bar-only lifecycle | **Verified baseline** | A launched local bundle remained alive, Launch Services classified it as `UIElement`, activation policy was `accessory`, and the runtime probe found zero on-screen Pinny-owned normal windows. |
 | Focused individual window | **Verified** | AX lookup and private ID mapping resolved individual foreign windows and matched their owner PIDs. `_AXUIElementGetWindow` is private and remains a compatibility risk. |
 | Protected-target rejection | **Verified in tests/source; broader live matrix pending** | Pinny rejects itself and known Dock/menu bar/Control Center/Notification Center/login/security/desktop targets. |
-| Global `⌃Z`, `⌃.`, and `⌃,` registration | **Implemented; live reservation verified, physical delivery pending** | A competing-process probe received Carbon `eventHotKeyExistsErr` for all three keys while Pinny 1.1.0 was running. Independent dispatch, failure reporting, and cleanup are covered; physical delivery while another app owns focus has not been recorded by the final automated harness. |
-| Individual-window hide/restore | **Implemented** | AX minimized-state mutation is read back before success; hidden windows restore in LIFO order, stale targets are discarded, and transient failures retain retry state. |
+| Global `⌃Z`, `⌃.`, and `⌃,` registration | **Implemented; live reservation verified, physical delivery pending** | A competing-process probe received Carbon `eventHotKeyExistsErr` for all three keys while Pinny 1.1.1 was running. Independent dispatch, failure reporting, and cleanup are covered; physical delivery while another app owns focus has not been recorded by the final automated harness. |
+| Individual-window hide/restore | **Implemented** | A successful AX minimized-state setter records the window immediately because macOS updates the readable value asynchronously; windows restore in LIFO order and stale targets are discarded. |
 | Public one-shot Raise | **Verified not to pin** | Controlled Codex test: 10/10 AX success, target rank 23, cover rank 20, 0/10 target-above-cover, no focus changes. |
 | Direct CGS/SLS backend | **Rejected** | Private set/get echoed level 3 for tested window IDs, but SLS iterator, `kCGWindowLayer`, and cross-app z-order stayed at normal layer 0; presenter-right denial appeared in unified logging. |
 | yabai executable | **Verified** | `/opt/homebrew/bin/yabai`, `yabai-v7.1.25`. |
@@ -259,10 +259,10 @@ yabai/controller invariants. The
 Swift Testing sources also compiled; the standalone Command Line Tools
 environment did not execute them through XCTest.
 
-`Scripts/create-dmg.sh` produced `dist/Pinny-1.1.0-arm64.dmg`. `hdiutil verify`
+`Scripts/create-dmg.sh` produced `dist/Pinny-1.1.1-arm64.dmg`. `hdiutil verify`
 reported a valid checksum, and the mounted app passed `codesign --verify
 --deep --strict`, plist lint, and arm64 architecture checks. SHA-256:
-`c8cb5560dc186e10c8513c5e74e38cab15096bc27d1307103fab8fcf67eb7093`.
+`69db38d76597106dc61e3a72c713063b204adb999ca61e926c9398f7bb57ced3`.
 
 Full Xcode and Swift Testing execution remain unavailable with standalone
 Command Line Tools. Compilation without an executed test summary is not counted
