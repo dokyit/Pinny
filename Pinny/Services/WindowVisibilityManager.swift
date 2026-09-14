@@ -125,7 +125,7 @@ final class WindowVisibilityManager {
         case .success:
             hiddenWindows.removeAll { $0.identity == window.identity }
             hiddenWindows.append(window)
-            return .success(summary(for: window))
+            return .success(window.summary)
         case .failure(let error):
             return .failure(error)
         }
@@ -141,7 +141,7 @@ final class WindowVisibilityManager {
             switch controller.show(window: window) {
             case .success:
                 hiddenWindows.removeLast()
-                return .success(summary(for: window))
+                return .success(window.summary)
             case .failure(.targetGone):
                 hiddenWindows.removeLast()
             case .failure(let error):
@@ -159,12 +159,5 @@ final class WindowVisibilityManager {
 
     func removeStaleStateIfNeeded() {
         hiddenWindows.removeAll { !validityChecker.isValid(window: $0) }
-    }
-
-    private func summary(for window: FocusedWindow) -> PinnedWindowSummary {
-        PinnedWindowSummary(
-            applicationName: window.applicationName,
-            windowTitle: window.title
-        )
     }
 }

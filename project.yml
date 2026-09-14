@@ -30,6 +30,11 @@ targets:
         ENABLE_APP_SANDBOX: NO
         ENABLE_HARDENED_RUNTIME: YES
         PRODUCT_BUNDLE_IDENTIFIER: com.pinnyutility.Pinny
+        PRODUCT_NAME: Pinny
+        PRODUCT_MODULE_NAME: Pinny
+        EXECUTABLE_NAME: Pinny
+        MARKETING_VERSION: 2.0.0
+        CURRENT_PROJECT_VERSION: 4
   PinnyTests:
     type: bundle.unit-test
     platform: macOS
@@ -41,3 +46,4 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.pinnyutility.PinnyTests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Pinny.app/Contents/MacOS/Pinny"

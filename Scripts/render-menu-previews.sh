@@ -16,6 +16,7 @@ xcrun --sdk macosx swiftc \
   "$ROOT/Pinny/Models/AppStatus.swift" \
   "$ROOT/Pinny/Models/HotKeyConfiguration.swift" \
   "$ROOT/Pinny/Models/WindowModels.swift" \
+  "$ROOT/Pinny/Models/WindowPreviewState.swift" \
   "$ROOT/Pinny/UI/MenuBarController.swift" \
   "$ROOT/Pinny/UI/MenuBarView.swift" \
   "$ROOT/Pinny/UI/ResourceLocator.swift" \

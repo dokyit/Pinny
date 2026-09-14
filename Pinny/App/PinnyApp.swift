@@ -2,7 +2,7 @@ import AppKit
 
 @main
 enum PinnyApp {
-    static func main() {
+    @MainActor static func main() {
         let application = NSApplication.shared
         let delegate = AppDelegate()
         application.delegate = delegate
@@ -14,6 +14,7 @@ enum PinnyApp {
     }
 }
 
+@MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private var coordinator: AppCoordinator?
     private var menuBarController: MenuBarController?
@@ -23,24 +24,33 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let preferences = PreferencesStore()
         let model = AppModel(shortcutDisplayName: preferences.shortcutConfiguration.displayName)
-        let coordinator = AppCoordinator(model: model, preferences: preferences)
+        let coordinator = AppCoordinator(
+            model: model,
+            preferences: preferences,
+            previewManager: WindowPreviewManager(
+                capture: ScreenCapturePreviewController()
+            )
+        )
         let menuBarController = MenuBarController(model: model, actions: MenuBarActions(
             refreshState: { [weak coordinator] in coordinator?.refreshVisibleState() },
             toggleCurrentWindow: { [weak coordinator] in coordinator?.toggleCurrentWindow() },
             hideCurrentWindow: { [weak coordinator] in coordinator?.hideCurrentWindow() },
             showLastHiddenWindow: { [weak coordinator] in coordinator?.showLastHiddenWindow() },
             raiseCurrentWindowOnce: { [weak coordinator] in coordinator?.raiseCurrentWindowOnce() },
+            selectPreviewWindow: { [weak coordinator] window in coordinator?.selectPreviewWindow(window) },
             requestAccessibility: { [weak coordinator] in coordinator?.requestAccessibilityPermission() },
             openAccessibilitySettings: { [weak coordinator] in coordinator?.openAccessibilitySettings() },
             setLaunchAtLogin: { [weak coordinator] enabled in coordinator?.setLaunchAtLogin(enabled) },
             openLoginItemsSettings: { [weak coordinator] in coordinator?.openLoginItemsSettings() },
-            openAdvancedSetupGuide: { [weak coordinator] in coordinator?.openAdvancedSetupGuide() },
             showAbout: { [weak coordinator] in coordinator?.showAbout() },
             quit: { [weak coordinator] in coordinator?.quit() }
         ))
 
         coordinator.onPinnedStateChanged = { [weak menuBarController] isPinned in
             menuBarController?.setPinnedIcon(isPinned)
+        }
+        coordinator.onPreviewNeedsAttention = { [weak menuBarController] in
+            menuBarController?.showPopover()
         }
         coordinator.onFirstLaunchNeedsPermission = { [weak menuBarController] in
             menuBarController?.showPopover()

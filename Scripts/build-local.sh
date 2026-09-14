@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="${0:A:h:h}"
-BUILD_ROOT="$ROOT/build/Local"
+BUILD_ROOT="${PINNY_BUILD_ROOT:-$ROOT/build/Local}"
 APP="$BUILD_ROOT/Pinny.app"
 CONTENTS="$APP/Contents"
 
@@ -23,6 +23,7 @@ SOURCES=(
   "$ROOT/Pinny/Models/AppStatus.swift"
   "$ROOT/Pinny/Models/HotKeyConfiguration.swift"
   "$ROOT/Pinny/Models/WindowModels.swift"
+  "$ROOT/Pinny/Models/WindowPreviewState.swift"
   "$ROOT/Pinny/Services/AccessibilityPermissionManager.swift"
   "$ROOT/Pinny/Services/FocusedWindowManager.swift"
   "$ROOT/Pinny/Services/HotKeyManager.swift"
@@ -30,11 +31,13 @@ SOURCES=(
   "$ROOT/Pinny/Services/NotificationManager.swift"
   "$ROOT/Pinny/Services/PinnyLogger.swift"
   "$ROOT/Pinny/Services/PreferencesStore.swift"
+  "$ROOT/Pinny/Services/ScreenCapturePreviewController.swift"
   "$ROOT/Pinny/Services/ShortcutActionRouter.swift"
   "$ROOT/Pinny/Services/UnsupportedWindowFilter.swift"
   "$ROOT/Pinny/Services/WindowLevelController.swift"
   "$ROOT/Pinny/Services/YabaiWindowService.swift"
   "$ROOT/Pinny/Services/WindowPinManager.swift"
+  "$ROOT/Pinny/Services/WindowPreviewManager.swift"
   "$ROOT/Pinny/Services/WindowRaiseManager.swift"
   "$ROOT/Pinny/Services/WindowVisibilityManager.swift"
   "$ROOT/Pinny/UI/MenuBarController.swift"
@@ -51,8 +54,11 @@ xcrun --sdk macosx swiftc \
   "${SOURCES[@]}" \
   -framework AppKit \
   -framework ApplicationServices \
+  -framework AVFoundation \
   -framework Carbon \
   -framework CoreGraphics \
+  -framework CoreMedia \
+  -framework ScreenCaptureKit \
   -framework ServiceManagement \
   -framework SwiftUI \
   -o "$CONTENTS/MacOS/Pinny"

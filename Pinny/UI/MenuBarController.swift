@@ -7,11 +7,11 @@ struct MenuBarActions {
     let hideCurrentWindow: () -> Void
     let showLastHiddenWindow: () -> Void
     let raiseCurrentWindowOnce: () -> Void
+    let selectPreviewWindow: (PreviewWindow) -> Void
     let requestAccessibility: () -> Void
     let openAccessibilitySettings: () -> Void
     let setLaunchAtLogin: (Bool) -> Void
     let openLoginItemsSettings: () -> Void
-    let openAdvancedSetupGuide: () -> Void
     let showAbout: () -> Void
     let quit: () -> Void
 }
@@ -42,13 +42,14 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
 
         statusItem.button?.image = idleImage
         statusItem.button?.imagePosition = .imageOnly
-        statusItem.button?.toolTip = "Pinny"
+        statusItem.button?.toolTip = "Pinny — Live preview"
+        statusItem.button?.setAccessibilityLabel("Pinny")
         statusItem.button?.target = self
         statusItem.button?.action = #selector(togglePopover)
         statusItem.button?.sendAction(on: [.leftMouseUp, .rightMouseUp])
 
         popover.behavior = .transient
-        popover.animates = true
+        popover.animates = false
         popover.delegate = self
         let hostingController = NSHostingController(
             rootView: MenuBarView(model: model, actions: actions)
@@ -59,7 +60,7 @@ final class MenuBarController: NSObject, NSPopoverDelegate {
 
     func setPinnedIcon(_ pinned: Bool) {
         statusItem.button?.image = pinned ? pinnedImage : idleImage
-        statusItem.button?.toolTip = pinned ? "Pinny — Window pinned" : "Pinny"
+        statusItem.button?.toolTip = pinned ? "Pinny — Live preview active" : "Pinny — Live preview"
     }
 
     func cleanUp() {
