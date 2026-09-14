@@ -4,6 +4,17 @@
 
 <h1 align="center">Pinny</h1>
 
+> [!IMPORTANT]
+> **Current source: Pinny 2.0.0.** This updates the original `Pinny.app`
+> (`com.pinnyutility.Pinny`), not a separate app. Control-Z now starts or closes
+> a global, view-only floating preview of the focused window; it is not
+> specific to Orca or any other app. Screen Recording is required for previews.
+> Accessibility enables automatic focused-window selection and is required
+> for hide, restore, and raise. No yabai helper or security changes are needed.
+> The release downloads and legacy pinning/setup details below describe 1.x,
+> not the current preview implementation. See [installation instructions](Documentation/INSTALL.txt)
+> for current behavior.
+
 <p align="center">
   Pin, hide, and restore focused macOS windows with global Control shortcuts.
 </p>

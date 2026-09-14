@@ -15,20 +15,31 @@ final class NotificationManager {
         label.alignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
 
-        let effectView = NSVisualEffectView()
-        effectView.material = .hudWindow
-        effectView.blendingMode = .behindWindow
-        effectView.state = .active
-        effectView.wantsLayer = true
-        effectView.layer?.cornerRadius = 12
-        effectView.layer?.masksToBounds = true
-        effectView.addSubview(label)
+        let container: NSView
+        if NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency {
+            let view = NSView()
+            view.wantsLayer = true
+            view.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
+            view.layer?.borderColor = NSColor.separatorColor.cgColor
+            view.layer?.borderWidth = 1
+            container = view
+        } else {
+            let effectView = NSVisualEffectView()
+            effectView.material = .hudWindow
+            effectView.blendingMode = .behindWindow
+            effectView.state = .active
+            container = effectView
+        }
+        container.wantsLayer = true
+        container.layer?.cornerRadius = 12
+        container.layer?.masksToBounds = true
+        container.addSubview(label)
 
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: effectView.leadingAnchor, constant: 22),
-            label.trailingAnchor.constraint(equalTo: effectView.trailingAnchor, constant: -22),
-            label.topAnchor.constraint(equalTo: effectView.topAnchor, constant: 13),
-            label.bottomAnchor.constraint(equalTo: effectView.bottomAnchor, constant: -13)
+            label.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 22),
+            label.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -22),
+            label.topAnchor.constraint(equalTo: container.topAnchor, constant: 13),
+            label.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -13)
         ])
 
         let size = label.intrinsicContentSize
@@ -39,7 +50,7 @@ final class NotificationManager {
             backing: .buffered,
             defer: false
         )
-        panel.contentView = effectView
+        panel.contentView = container
         panel.isOpaque = false
         panel.backgroundColor = .clear
         panel.hasShadow = true
@@ -55,7 +66,7 @@ final class NotificationManager {
             .ignoresCycle
         ]
         panel.ignoresMouseEvents = true
-        panel.alphaValue = 0
+        panel.alphaValue = 1
 
         let mouseLocation = NSEvent.mouseLocation
         let screen = NSScreen.screens.first(where: { NSMouseInRect(mouseLocation, $0.frame, false) }) ?? .main
@@ -67,23 +78,14 @@ final class NotificationManager {
         }
 
         panel.orderFrontRegardless()
-        NSAnimationContext.runAnimationGroup { context in
-            context.duration = 0.12
-            panel.animator().alphaValue = 1
-        }
         self.panel = panel
 
         let workItem = DispatchWorkItem { [weak self, weak panel] in
             guard let self, let panel else { return }
-            NSAnimationContext.runAnimationGroup({ context in
-                context.duration = 0.2
-                panel.animator().alphaValue = 0
-            }, completionHandler: {
-                panel.close()
-                if self.panel === panel {
-                    self.panel = nil
-                }
-            })
+            panel.close()
+            if self.panel === panel {
+                self.panel = nil
+            }
         }
         dismissalWorkItem = workItem
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.35, execute: workItem)

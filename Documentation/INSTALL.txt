@@ -3,16 +3,19 @@ Install Pinny
 
 1. Drag Pinny.app onto the Applications shortcut in this disk image.
 2. Open Pinny from /Applications. It appears only in the macOS menu bar.
-3. Click the pushpin and grant Accessibility permission when prompted.
-4. Focus a window and use these global shortcuts (Control, not Command):
-   - Control-Z toggles always-on-top pinning.
+3. Allow Screen Recording when starting a live preview. Accessibility is optional
+   for preview selection and required for hide, restore, and raise.
+4. Focus a window in any supported app and use these global shortcuts
+   (Control, not Command):
+   - Control-Z starts or closes a live, view-only preview of the focused window.
    - Control-. hides the focused individual window.
    - Control-, restores the most recently hidden window.
 
-Important: stock macOS does not let one app change another app's persistent
-window level. Generic persistent pinning requires the separately configured
-yabai advanced helper described in the project's README. Pinny never changes
-System Integrity Protection, NVRAM, sudoers, or Dock injection automatically.
+If the focused window cannot be identified, choose a window from Pinny's menu.
+The floating preview shows the source app's name; it is not specific to that app.
+Pinny does not make the original window interactive or change its window level.
+No privileged helper or system security changes are required.
 
+Pinny 2.0.0 updates the original Pinny app; it is not a separate application.
 This local build is ad-hoc signed, not notarized. macOS may ask you to confirm
 opening it in System Settings > Privacy & Security.

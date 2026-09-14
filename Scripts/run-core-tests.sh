@@ -14,6 +14,7 @@ xcrun --sdk macosx swiftc \
   "$ROOT/Pinny/Models/AppStatus.swift" \
   "$ROOT/Pinny/Models/HotKeyConfiguration.swift" \
   "$ROOT/Pinny/Models/WindowModels.swift" \
+  "$ROOT/Pinny/Models/WindowPreviewState.swift" \
   "$ROOT/Pinny/Services/PreferencesStore.swift" \
   "$ROOT/Pinny/Services/ShortcutActionRouter.swift" \
   "$ROOT/Pinny/Services/UnsupportedWindowFilter.swift" \

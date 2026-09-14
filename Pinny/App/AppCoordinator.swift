@@ -1,19 +1,19 @@
 import AppKit
 import Foundation
 
+@MainActor
 final class AppCoordinator {
     let model: AppModel
 
     private let preferences: PreferencesStore
     private let accessibilityManager: AccessibilityPermissionManager
     private let focusedWindowManager: FocusedWindowManager
-    private let pinManager: WindowPinManager
+    private let previewManager: WindowPreviewManager
     private let raiseManager: WindowRaiseManager
     private let visibilityManager: WindowVisibilityManager
     private let hotKeyManager: HotKeyManager
     private let launchAtLoginManager: LaunchAtLoginManager
     private let notificationManager: NotificationManager
-    private let backendReadinessChecker: PinningBackendReadinessChecking
 
     private var observers: [NSObjectProtocol] = []
     private var housekeepingTimer: Timer?
@@ -25,6 +25,7 @@ final class AppCoordinator {
     )
 
     var onPinnedStateChanged: ((Bool) -> Void)?
+    var onPreviewNeedsAttention: (() -> Void)?
     var onFirstLaunchNeedsPermission: (() -> Void)?
 
     init(
@@ -32,72 +33,77 @@ final class AppCoordinator {
         preferences: PreferencesStore = PreferencesStore(),
         accessibilityManager: AccessibilityPermissionManager = AccessibilityPermissionManager(),
         focusedWindowManager: FocusedWindowManager = FocusedWindowManager(),
-        pinManager: WindowPinManager = WindowPinManager(levelController: YabaiWindowLevelController()),
+        previewManager: WindowPreviewManager,
         raiseManager: WindowRaiseManager = WindowRaiseManager(),
         visibilityManager: WindowVisibilityManager = WindowVisibilityManager(),
         hotKeyManager: HotKeyManager = HotKeyManager(),
         launchAtLoginManager: LaunchAtLoginManager = LaunchAtLoginManager(),
-        notificationManager: NotificationManager = NotificationManager(),
-        backendReadinessChecker: PinningBackendReadinessChecking = YabaiBackendReadinessChecker()
+        notificationManager: NotificationManager = NotificationManager()
     ) {
         self.model = model
         self.preferences = preferences
         self.accessibilityManager = accessibilityManager
         self.focusedWindowManager = focusedWindowManager
-        self.pinManager = pinManager
+        self.previewManager = previewManager
         self.raiseManager = raiseManager
         self.visibilityManager = visibilityManager
         self.hotKeyManager = hotKeyManager
         self.launchAtLoginManager = launchAtLoginManager
         self.notificationManager = notificationManager
-        self.backendReadinessChecker = backendReadinessChecker
     }
 
     func start() {
         PinnyLogger.lifecycle.info("Pinny started")
+        previewManager.onStateChange = { [weak self] state in
+            self?.handlePreviewStateChange(state)
+        }
         refreshPermissionState()
-        refreshBackendReadiness()
         refreshLaunchAtLoginState()
         installWorkspaceObservers()
         registerHotKeys()
 
         housekeepingTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            self?.performHousekeeping()
+            MainActor.assumeIsolated {
+                self?.performHousekeeping()
+            }
         }
 
         if !model.isAccessibilityTrusted && !preferences.onboardingCompleted {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { [weak self] in
-                self?.onFirstLaunchNeedsPermission?()
+                MainActor.assumeIsolated {
+                    self?.onFirstLaunchNeedsPermission?()
+                }
             }
         }
     }
 
     func toggleCurrentWindow() {
         PinnyLogger.hotKey.debug("Window toggle action routed")
-        guard accessibilityManager.recheck() else {
-            PinnyLogger.accessibility.notice("Window toggle blocked because Accessibility permission is missing")
-            model.isAccessibilityTrusted = false
-            model.isFocusedWindowPinned = false
-            model.status = .accessibilityPermissionRequired
-            notificationManager.show(message: "Accessibility permission required")
+        if previewManager.state.canStop {
+            previewManager.stop()
             return
         }
 
-        model.isAccessibilityTrusted = true
-        preferences.onboardingCompleted = true
-
-        switch focusedWindowManager.focusedWindow(accessibilityTrusted: true) {
-        case .failure(let error):
-            PinnyLogger.window.error("Focused-window lookup failed: \(String(describing: error), privacy: .public)")
-            let reason = error.localizedDescription
-            model.isFocusedWindowPinned = false
-            model.status = .unableToPin(reason)
-            notificationManager.show(message: "Unable to pin this window")
-        case .success(let window):
-            PinnyLogger.window.debug("Focused window resolved for pid \(window.identity.processIdentifier, privacy: .public)")
-            apply(pinManager.toggle(window: window))
-            model.isFocusedWindowPinned = pinManager.isPinned(window: window)
+        let trusted = accessibilityManager.recheck()
+        model.isAccessibilityTrusted = trusted
+        if trusted {
+            preferences.onboardingCompleted = true
         }
+
+        var selection: PreviewWindowSelection?
+        if trusted,
+           case .success(let window) = focusedWindowManager.focusedWindow(accessibilityTrusted: true) {
+            selection = PreviewWindowSelection(
+                processIdentifier: window.identity.processIdentifier,
+                title: window.title,
+                frame: axFrame(of: window.element)
+            )
+        }
+        previewManager.begin(selection: selection)
+    }
+
+    func selectPreviewWindow(_ window: PreviewWindow) {
+        previewManager.select(window)
     }
 
     func requestAccessibilityPermission() {
@@ -110,12 +116,7 @@ final class AppCoordinator {
     }
 
     func raiseCurrentWindowOnce() {
-        guard accessibilityManager.recheck() else {
-            model.isAccessibilityTrusted = false
-            model.status = .accessibilityPermissionRequired
-            notificationManager.show(message: "Accessibility permission required")
-            return
-        }
+        guard requireAccessibility() else { return }
 
         switch focusedWindowManager.focusedWindow(accessibilityTrusted: true) {
         case .failure(let error):
@@ -124,10 +125,7 @@ final class AppCoordinator {
         case .success(let window):
             switch raiseManager.raiseOnce(window: window) {
             case .success:
-                model.status = .windowRaisedOnce(PinnedWindowSummary(
-                    applicationName: window.applicationName,
-                    windowTitle: window.title
-                ))
+                model.status = .windowRaisedOnce(window.summary)
                 PinnyLogger.window.info("One-shot AXRaise fallback succeeded")
                 notificationManager.show(message: "Raised once")
             case .failure(let error):
@@ -140,15 +138,7 @@ final class AppCoordinator {
 
     func hideCurrentWindow() {
         PinnyLogger.hotKey.debug("Hide-window action routed")
-        guard accessibilityManager.recheck() else {
-            model.isAccessibilityTrusted = false
-            model.status = .accessibilityPermissionRequired
-            notificationManager.show(message: "Accessibility permission required")
-            return
-        }
-
-        model.isAccessibilityTrusted = true
-        preferences.onboardingCompleted = true
+        guard requireAccessibility() else { return }
 
         switch focusedWindowManager.focusedWindow(accessibilityTrusted: true) {
         case .failure(let error):
@@ -172,15 +162,7 @@ final class AppCoordinator {
 
     func showLastHiddenWindow() {
         PinnyLogger.hotKey.debug("Show-window action routed")
-        guard accessibilityManager.recheck() else {
-            model.isAccessibilityTrusted = false
-            model.status = .accessibilityPermissionRequired
-            notificationManager.show(message: "Accessibility permission required")
-            return
-        }
-
-        model.isAccessibilityTrusted = true
-        preferences.onboardingCompleted = true
+        guard requireAccessibility() else { return }
 
         switch visibilityManager.showLastHidden() {
         case .success(let summary):
@@ -203,9 +185,7 @@ final class AppCoordinator {
 
     func refreshVisibleState() {
         refreshPermissionState()
-        refreshBackendReadiness()
         refreshLaunchAtLoginState()
-        refreshFocusedPinState()
         visibilityManager.removeStaleStateIfNeeded()
         model.hiddenWindowCount = visibilityManager.hiddenWindowCount
     }
@@ -226,20 +206,13 @@ final class AppCoordinator {
         launchAtLoginManager.openSystemSettings()
     }
 
-    func openAdvancedSetupGuide() {
-        guard let url = URL(string: "https://github.com/asmvik/yabai/wiki/Disabling-System-Integrity-Protection") else {
-            return
-        }
-        NSWorkspace.shared.open(url)
-    }
-
     func showAbout() {
         NSApplication.shared.activate(ignoringOtherApps: true)
         NSApplication.shared.orderFrontStandardAboutPanel(options: [
             .applicationName: "Pinny",
-            .applicationVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0",
+            .applicationVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "2.0.0",
             .credits: NSAttributedString(
-                string: "A native menu bar utility. Generic third-party always-on-top control uses an optional, user-configured yabai Dock scripting addition because public macOS APIs do not grant foreign-window presenter rights."
+                string: "A native menu bar utility for live, view-only window previews and window hide/restore shortcuts. Uses standard macOS permissions; no privileged helper required."
             )
         ])
     }
@@ -258,9 +231,7 @@ final class AppCoordinator {
         }
         observers.removeAll()
         hotKeyManager.unregister()
-        if case .failure(let error) = pinManager.cleanUpBeforeQuit() {
-            PinnyLogger.window.fault("Pinny could not restore the pinned window while quitting: \(error.localizedDescription, privacy: .public)")
-        }
+        previewManager.stop()
         notificationManager.cleanUp()
     }
 
@@ -293,36 +264,68 @@ final class AppCoordinator {
             : failures.joined(separator: "\n")
     }
 
-    private func apply(_ result: PinToggleResult) {
-        switch result {
-        case .pinned(let summary):
-            PinnyLogger.window.info("Window pin operation succeeded")
-            model.pinnedWindowSummary = summary
-            model.status = .windowPinned(summary)
-            notificationManager.show(message: "Pinned")
-            onPinnedStateChanged?(true)
-        case .unpinned:
-            PinnyLogger.window.info("Window unpin operation succeeded")
-            model.pinnedWindowSummary = nil
-            model.status = .ready
-            notificationManager.show(message: "Unpinned")
-            onPinnedStateChanged?(false)
-        case .unable(let error):
-            PinnyLogger.window.notice("Window pin operation unavailable: \(error.localizedDescription, privacy: .public)")
-            if let pinned = pinManager.pinnedWindow {
-                model.pinnedWindowSummary = PinnedWindowSummary(
-                    applicationName: pinned.window.applicationName,
-                    windowTitle: pinned.window.title
-                )
-                model.status = .unableToPin(error.localizedDescription)
-                onPinnedStateChanged?(true)
-            } else {
-                model.pinnedWindowSummary = nil
-                model.status = .unableToPin(error.localizedDescription)
-                onPinnedStateChanged?(false)
+    private func handlePreviewStateChange(_ state: WindowPreviewState) {
+        let wasActive = model.previewState.activeWindow != nil
+        model.previewState = state
+        onPinnedStateChanged?(state.activeWindow != nil)
+
+        switch state {
+        case .active:
+            if !wasActive {
+                notificationManager.show(message: "Preview started")
             }
-            notificationManager.show(message: "Unable to pin this window")
+        case .idle:
+            if wasActive {
+                notificationManager.show(message: "Preview closed")
+            }
+        case .choosing, .failed:
+            onPreviewNeedsAttention?()
+        case .loading, .starting:
+            break
         }
+    }
+
+    private func requireAccessibility() -> Bool {
+        guard accessibilityManager.recheck() else {
+            model.isAccessibilityTrusted = false
+            model.status = .accessibilityPermissionRequired
+            notificationManager.show(message: "Accessibility permission required")
+            return false
+        }
+        model.isAccessibilityTrusted = true
+        preferences.onboardingCompleted = true
+        return true
+    }
+
+    private func axFrame(of element: AXUIElement) -> CGRect? {
+        var positionValue: CFTypeRef?
+        var sizeValue: CFTypeRef?
+        guard AXUIElementCopyAttributeValue(
+            element,
+            kAXPositionAttribute as CFString,
+            &positionValue
+        ) == .success,
+            AXUIElementCopyAttributeValue(
+                element,
+                kAXSizeAttribute as CFString,
+                &sizeValue
+            ) == .success,
+            let positionValue,
+            let sizeValue,
+            CFGetTypeID(positionValue) == AXValueGetTypeID(),
+            CFGetTypeID(sizeValue) == AXValueGetTypeID() else {
+            return nil
+        }
+
+        let positionAX = unsafeBitCast(positionValue, to: AXValue.self)
+        let sizeAX = unsafeBitCast(sizeValue, to: AXValue.self)
+        var point = CGPoint.zero
+        var size = CGSize.zero
+        guard AXValueGetValue(positionAX, .cgPoint, &point),
+              AXValueGetValue(sizeAX, .cgSize, &size) else {
+            return nil
+        }
+        return CGRect(origin: point, size: size)
     }
 
     private func refreshPermissionState() {
@@ -353,25 +356,6 @@ final class AppCoordinator {
         }
     }
 
-    private func refreshBackendReadiness() {
-        guard model.isAccessibilityTrusted, pinManager.pinnedWindow == nil else { return }
-        let mayReplaceStatus: Bool
-        switch model.status {
-        case .ready, .advancedHelperRequired:
-            mayReplaceStatus = true
-        default:
-            mayReplaceStatus = false
-        }
-
-        if let issue = backendReadinessChecker.readinessIssue() {
-            if mayReplaceStatus {
-                model.status = .advancedHelperRequired(issue)
-            }
-        } else if case .advancedHelperRequired = model.status {
-            model.status = .ready
-        }
-    }
-
     private func installWorkspaceObservers() {
         let center = NSWorkspace.shared.notificationCenter
         observers.append(center.addObserver(
@@ -379,9 +363,10 @@ final class AppCoordinator {
             object: nil,
             queue: .main
         ) { [weak self] note in
-            let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication
-            self?.focusedWindowManager.recordActivatedApplication(app)
-            self?.model.isFocusedWindowPinned = false
+            MainActor.assumeIsolated {
+                let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication
+                self?.focusedWindowManager.recordActivatedApplication(app)
+            }
         })
 
         observers.append(center.addObserver(
@@ -389,14 +374,13 @@ final class AppCoordinator {
             object: nil,
             queue: .main
         ) { [weak self] note in
-            guard let self,
-                  let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication else {
-                return
+            MainActor.assumeIsolated {
+                guard let app = note.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication else {
+                    return
+                }
+                self?.visibilityManager.removeState(forTerminatedProcess: app.processIdentifier)
+                self?.model.hiddenWindowCount = self?.visibilityManager.hiddenWindowCount ?? 0
             }
-            self.pinManager.removeState(forTerminatedProcess: app.processIdentifier)
-            self.visibilityManager.removeState(forTerminatedProcess: app.processIdentifier)
-            self.model.hiddenWindowCount = self.visibilityManager.hiddenWindowCount
-            self.synchronizePinnedPresentation()
         })
 
         observers.append(NotificationCenter.default.addObserver(
@@ -404,58 +388,16 @@ final class AppCoordinator {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            self?.refreshPermissionState()
-            self?.refreshBackendReadiness()
-            self?.refreshLaunchAtLoginState()
+            MainActor.assumeIsolated {
+                self?.refreshPermissionState()
+                self?.refreshLaunchAtLoginState()
+            }
         })
     }
 
     private func performHousekeeping() {
-        let wasPinned = pinManager.pinnedWindow != nil
-        let maintenance = pinManager.removeStaleStateIfNeeded()
-        switch maintenance {
-        case .reapplied:
-            PinnyLogger.window.info("Pinned window sub-layer was re-applied")
-        case .failed(let error):
-            PinnyLogger.window.error("Pinned window maintenance failed: \(error.localizedDescription, privacy: .public)")
-        case .unsupported, .healthy, .targetGone:
-            break
-        }
-        if wasPinned && pinManager.pinnedWindow == nil {
-            synchronizePinnedPresentation()
-        }
         visibilityManager.removeStaleStateIfNeeded()
         model.hiddenWindowCount = visibilityManager.hiddenWindowCount
         refreshPermissionState()
-    }
-
-    private func refreshFocusedPinState() {
-        guard model.isAccessibilityTrusted else {
-            model.isFocusedWindowPinned = false
-            return
-        }
-        switch focusedWindowManager.focusedWindow(accessibilityTrusted: true) {
-        case .success(let window):
-            model.isFocusedWindowPinned = pinManager.isPinned(window: window)
-        case .failure:
-            model.isFocusedWindowPinned = false
-        }
-    }
-
-    private func synchronizePinnedPresentation() {
-        if let pinned = pinManager.pinnedWindow {
-            let summary = PinnedWindowSummary(
-                applicationName: pinned.window.applicationName,
-                windowTitle: pinned.window.title
-            )
-            model.pinnedWindowSummary = summary
-            model.status = .windowPinned(summary)
-            onPinnedStateChanged?(true)
-        } else {
-            model.pinnedWindowSummary = nil
-            model.isFocusedWindowPinned = false
-            model.status = model.isAccessibilityTrusted ? .ready : .accessibilityPermissionRequired
-            onPinnedStateChanged?(false)
-        }
     }
 }

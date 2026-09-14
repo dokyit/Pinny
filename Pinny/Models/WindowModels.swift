@@ -52,11 +52,12 @@ struct FocusedWindow {
     let subrole: String?
     let element: AXUIElement
 
+    var summary: PinnedWindowSummary {
+        PinnedWindowSummary(applicationName: applicationName, windowTitle: title)
+    }
+
     var displayName: String {
-        guard let title, !title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
-            return applicationName
-        }
-        return "\(applicationName) — \(title)"
+        summary.displayName
     }
 }
 

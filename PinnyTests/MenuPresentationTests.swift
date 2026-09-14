@@ -1,3 +1,4 @@
+import CoreGraphics
 import Testing
 @testable import Pinny
 
@@ -112,5 +113,138 @@ struct MenuPresentationTests {
         #expect(hidden.statusDetail == "Hidden: Notes — Ideas")
         #expect(shown.statusTitle == "Window restored")
         #expect(shown.statusDetail == "Restored: Notes — Ideas")
+    }
+
+    @Test
+    func testIdlePreviewIsSelectableWithoutAccessibility() {
+        let presentation = MenuPresentation.make(
+            status: .accessibilityPermissionRequired,
+            isAccessibilityTrusted: false,
+            previewState: .idle
+        )
+
+        #expect(presentation.canToggleWindow)
+        #expect(presentation.actionTitle == "Float Window Preview")
+        #expect(presentation.statusTitle == "Ready")
+        #expect(presentation.statusDetail == nil)
+    }
+
+    @Test
+    func testActivePreviewCanCloseWithoutAccessibility() {
+        let window = PreviewWindow(
+            id: 7,
+            processIdentifier: 42,
+            applicationName: "Safari",
+            title: "Docs",
+            frame: CGRect(x: 0, y: 0, width: 800, height: 600)
+        )
+        let presentation = MenuPresentation.make(
+            status: .accessibilityPermissionRequired,
+            isAccessibilityTrusted: false,
+            previewState: .active(window)
+        )
+
+        #expect(presentation.canToggleWindow)
+        #expect(presentation.actionTitle == "Close Preview")
+        #expect(presentation.statusTitle == "Live preview")
+        #expect(presentation.statusDetail == "Safari — Docs — View only")
+    }
+
+    @Test
+    func testActivePreviewPreservesHideFailureReason() {
+        let window = PreviewWindow(
+            id: 8,
+            processIdentifier: 42,
+            applicationName: "Safari",
+            title: "Docs",
+            frame: CGRect(x: 0, y: 0, width: 800, height: 600)
+        )
+        let presentation = MenuPresentation.make(
+            status: .unableToHide("Cannot minimize"),
+            isAccessibilityTrusted: true,
+            previewState: .active(window)
+        )
+
+        #expect(presentation.actionTitle == "Close Preview")
+        #expect(presentation.canToggleWindow)
+        #expect(presentation.statusDetail?.contains("Cannot minimize") == true)
+        #expect(presentation.statusDetail?.contains("Safari — Docs") == true)
+    }
+
+    @Test
+    func testDuplicateShortcutReasonIsNotRepeated() {
+        let presentation = MenuPresentation.make(
+            status: .shortcutRegistrationFailed("busy"),
+            isAccessibilityTrusted: true,
+            shortcutRegistrationFailure: "busy",
+            previewState: .idle
+        )
+
+        #expect(presentation.statusTitle == "Shortcut registration failed")
+        #expect(presentation.statusDetail == "busy")
+    }
+
+    @Test
+    func testPreviewFailureIsTruthful() {
+        let presentation = MenuPresentation.make(
+            status: .ready,
+            isAccessibilityTrusted: true,
+            previewState: .failed("Screen Recording permission is required.")
+        )
+
+        #expect(presentation.statusTitle == "Unable to show preview")
+        #expect(presentation.statusDetail == "Screen Recording permission is required.")
+        #expect(presentation.actionTitle == "Float Window Preview")
+        #expect(presentation.canToggleWindow)
+    }
+
+    @Test
+    func testShortcutFailureDoesNotHidePreviewError() {
+        let presentation = MenuPresentation.make(
+            status: .ready,
+            isAccessibilityTrusted: true,
+            shortcutRegistrationFailure: "⌃Z is already registered by another application.",
+            previewState: .failed("capture interrupted")
+        )
+
+        #expect(presentation.statusTitle == "Unable to show preview")
+        #expect(presentation.statusDetail?.contains("capture interrupted") == true)
+        #expect(presentation.statusDetail?.contains("already registered") == true)
+    }
+
+    @Test
+    func testChoosingLoadingAndStartingPresentations() {
+        let window = PreviewWindow(
+            id: 9,
+            processIdentifier: 43,
+            applicationName: "Notes",
+            title: nil,
+            frame: .zero
+        )
+
+        let loading = MenuPresentation.make(
+            status: .ready,
+            isAccessibilityTrusted: true,
+            previewState: .loading
+        )
+        #expect(loading.statusTitle == "Finding windows…")
+        #expect(loading.actionTitle == "Cancel Preview")
+
+        let choosing = MenuPresentation.make(
+            status: .ready,
+            isAccessibilityTrusted: false,
+            previewState: .choosing([window])
+        )
+        #expect(choosing.statusTitle == "Choose a window")
+        #expect(choosing.actionTitle == "Cancel Preview")
+        #expect(choosing.canToggleWindow)
+
+        let starting = MenuPresentation.make(
+            status: .ready,
+            isAccessibilityTrusted: true,
+            previewState: .starting(window)
+        )
+        #expect(starting.statusTitle == "Starting preview…")
+        #expect(starting.actionTitle == "Cancel Preview")
     }
 }

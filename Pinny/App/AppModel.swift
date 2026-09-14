@@ -7,8 +7,7 @@ final class AppModel: ObservableObject {
     @Published var isLaunchAtLoginEnabled = false
     @Published var launchAtLoginMessage: String?
     @Published var shortcutRegistrationFailure: String?
-    @Published var pinnedWindowSummary: PinnedWindowSummary?
-    @Published var isFocusedWindowPinned = false
+    @Published var previewState: WindowPreviewState = .idle
     @Published var hiddenWindowCount = 0
 
     let shortcutDisplayName: String
@@ -22,12 +21,12 @@ final class AppModel: ObservableObject {
             status: status,
             isAccessibilityTrusted: isAccessibilityTrusted,
             shortcutRegistrationFailure: shortcutRegistrationFailure,
-            isFocusedWindowPinned: isFocusedWindowPinned
+            previewState: previewState
         )
     }
 
-    var hasPinnedWindow: Bool {
-        pinnedWindowSummary != nil
+    var hasPreview: Bool {
+        previewState.activeWindow != nil
     }
 
     var hasHiddenWindows: Bool {
